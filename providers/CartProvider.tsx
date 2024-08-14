@@ -3,6 +3,7 @@
 
 import { CartContextProvider } from "@/hooks/useCart";
 
+
 interface CartProviderProps {
     children: React.ReactNode;
 }

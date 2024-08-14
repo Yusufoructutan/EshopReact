@@ -1,16 +1,7 @@
 'use client'
 
-import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form"
-
-interface InputProps {
-    id: string
-    label: string
-    type: string
-    disabled: boolean
-    required: boolean
-    register: UseFormRegister<FieldValues>
-    errors: FieldErrors
-}
+import { InputProps } from './InputProps';  // İlgili TypeScript dosyasını import et
+import React from 'react';
 
 const Input: React.FC<InputProps> = ({
     id,
@@ -22,7 +13,7 @@ const Input: React.FC<InputProps> = ({
     errors
 }) => {
     return (
-        <div className="w-full relative">
+        <div className="relative w-full">
             <input
                 autoComplete="off"
                 id={id}
@@ -49,21 +40,25 @@ const Input: React.FC<InputProps> = ({
             />
             <label
                 htmlFor={id}
-                className="
+                className={`
                     absolute
-                    text-md
-                    duration-150
-                    transform
-                    -translate-y-3
-                    top-5
-                    z-10
-                    origin-[0]
                     left-4
+                    top-4
+                    text-md
+                    font-light
+                    transition-all
+                    duration-300
+                    transform
+                    scale-75
+                    -translate-y-4
+                    origin-top-left
                     peer-placeholder-shown:scale-100
-                    peer-placeholder-shown:translate-y-0
+                    peer-placeholder-shown:translate-y-2
+                    peer-placeholder-shown:top-6
+                    peer-focus:-translate-y-4
                     peer-focus:scale-75
-                    peer-focus:translate-y-4
-                "
+                    ${errors[id] ? 'text-rose-500' : 'text-slate-500'}
+                `}
             >
                 {label}
             </label>

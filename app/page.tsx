@@ -1,22 +1,21 @@
-import Image from 'next/image'
-import HomeBanner from './components/NavBar/HomeBanner'
-import Container from './components/container'
-import ProductsList from './components/Pages/ProductList'
+import Container from "./components/container";
+import HomeBanner from "./components/NavBar/HomeBanner";
+import ProductsList from "./components/Pages/ProductList";
+import { useAuth } from "./context/AuthContext";
 
-import Link from 'next/link';
 
 export default function Home() {
+
   return (
     <div className='p-8'>
       <Container>
         <div>
-          <HomeBanner/>
+          <HomeBanner />
         </div>
         <div>
-          <ProductsList/>
+          <ProductsList />
         </div>
-        
       </Container>
     </div>
-  )
+  );
 }

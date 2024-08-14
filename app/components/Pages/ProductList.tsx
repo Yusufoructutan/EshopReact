@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import ProductCard from '../Products/ProductCard';
 
 interface Product {
-    id: number;
+    productId: number;
     name: string;
     price: number;
     description: string;
@@ -18,22 +18,24 @@ const ProductsList = () => {
 
   useEffect(() => {
     const fetchProducts = async () => {
-        try {
-          const response = await fetch('https://localhost:7125/api/Product'); // Backend API URL
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          
-          const data = await response.json();
-          console.log(data); // Veriyi kontrol edin
-          setProducts(data);
-        } catch (error: any) {
-          console.error('Error fetching products:', error); // Detaylı hata mesajı
-          setError("An error occurred while fetching products.");
-        } finally {
-          setLoading(false);
+      try {
+        const response = await fetch('https://localhost:7125/api/Product');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
         }
-      };
+  
+        const text = await response.text();
+        console.log('Response Text:', text); // Yanıtı kontrol edin
+        const data = JSON.parse(text); // JSON olarak ayrıştırın
+        console.log('Parsed Data:', data); // Ayrıştırılmış veriyi kontrol edin
+        setProducts(data);
+      } catch (error: any) {
+        console.error('Error fetching products:', error);
+        setError("An error occurred while fetching products.");
+      } finally {
+        setLoading(false);
+      }
+  };
 
     fetchProducts();
   }, []);
@@ -43,7 +45,6 @@ const ProductsList = () => {
 
   return (
     <div>
-     
       <div className="grid grid-cols-3 gap-4">
         {products.map(product => (
           <ProductCard key={product.id} data={product} />

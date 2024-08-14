@@ -1,16 +1,18 @@
 'use client'
 
-import { useState } from "react";
-import Input from "../components/inputs/Input";
-import { FieldValues, useForm } from "react-hook-form";
-import Button from "../components/Buttons/Button";
-import { useRouter } from 'next/navigation'; // Kullanıcıyı yönlendirmek için
+import { useState } from 'react';
+import Input from '../components/inputs/Input';
+import { FieldValues, useForm } from 'react-hook-form';
+import Button from '../components/Buttons/Button';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useAuth } from '../context/AuthContext';
 
-const RegisterForm = () => {
+const LoginForm = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const router = useRouter(); // Yönlendirme için
+    const router = useRouter();
+    const { login } = useAuth(); // Get login function from context
 
     const {
         register,
@@ -18,9 +20,8 @@ const RegisterForm = () => {
         formState: { errors },
     } = useForm<FieldValues>({
         defaultValues: {
-            name: "",
-            email: "",
-            password: ""
+            username: '',
+            password: ''
         }
     });
 
@@ -29,8 +30,7 @@ const RegisterForm = () => {
         setError(null);
 
         try {
-            // Backend API URL'sini kendi sunucunuzun URL'si ile değiştirin
-            const response = await fetch('https://localhost:7125/api/User/register', {
+            const response = await fetch('https://localhost:7125/api/User/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -39,13 +39,20 @@ const RegisterForm = () => {
             });
 
             if (!response.ok) {
-                throw new Error('Kayıt başarısız');
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Login failed');
             }
 
-            // Kayıt başarılı olduğunda
-            router.push('/login'); // Login sayfasına yönlendir
+            const result = await response.json();
+            const token = result.token;
+
+            // Use login function from context
+            login(token);
+
+            // Redirect based on role or default to home
+            router.push('/'); 
         } catch (error: any) {
-            setError(error.message || 'Bir hata oluştu');
+            setError(error.message || 'An error occurred');
         } finally {
             setIsLoading(false);
         }
@@ -53,24 +60,16 @@ const RegisterForm = () => {
 
     return (
         <>
-            <h1>Sign up For E-shop</h1>
+            <h1>Sign in to E-shop</h1>
             <hr className="bg-slate-300 w-full h-px" />
             <Input
-                id="name"
-                label="Name"
+                id="username"
+                label="Username"
                 disabled={isLoading}
                 register={register}
                 errors={errors}
-                required type="text"
-            />
-
-            <Input
-                id="email"
-                label="Email"
-                disabled={isLoading}
-                register={register}
-                errors={errors}
-                required type="email"
+                required
+                type="text"
             />
 
             <Input
@@ -79,11 +78,12 @@ const RegisterForm = () => {
                 disabled={isLoading}
                 register={register}
                 errors={errors}
-                required type="password"
+                required
+                type="password"
             />
 
             <Button
-                label={isLoading ? "Loading" : 'Sign Up'}
+                label={isLoading ? 'Loading' : 'Login'}
                 onClick={handleSubmit(onSubmit)}
                 disabled={isLoading}
             />
@@ -91,10 +91,10 @@ const RegisterForm = () => {
             {error && <p className="text-red-500">{error}</p>}
 
             <p className="text-sm">
-                Already have an account? <Link href='/login' className="underline">Log in</Link>
+                Do not have an account? <Link href='/register' className="underline">Sign Up</Link>
             </p>
         </>
     );
 }
 
-export default RegisterForm;
+export default LoginForm;

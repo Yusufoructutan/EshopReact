@@ -1,8 +1,6 @@
-// app/product/[productId]/page.tsx
 "use client";
+
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import Rating from '@mui/material/Rating';
 import Container from '@/app/components/container';
 import ProductDetails from './ProductDetails';
 

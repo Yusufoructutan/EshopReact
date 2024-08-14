@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
 import { useState, useCallback, useEffect } from 'react';
 import SetQuantity from "@/app/components/Products/SetQuantity";
 import { Rating } from "@mui/material";
-import Button from '@/app/components/Products/Button';
 import { useCart } from '@/hooks/useCart';
 import { MdCheckCircle } from 'react-icons/md';
 import { useRouter } from 'next/navigation'; // Güncellenmiş import
+import Button from '@/app/components/Buttons/Button';
 
 interface ProductCategory {
     productCategoryId: number;
@@ -15,7 +15,7 @@ interface ProductCategory {
 }
 
 interface Product {
-    id: number;
+    productId: number;
     name: string;
     price: number;
     productImage: string;
@@ -31,17 +31,20 @@ interface ProductDetailsProps {
 const Horizontal = () => {
     return <hr className="w-[30%] my-2" />;
 }
- 
+
 const ProductDetails = ({ product }: ProductDetailsProps) => {
     const { cartProducts, handleAddProductToCart } = useCart();
     const [isProductInCart, setIsProductInCart] = useState(false);
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const router = useRouter();
 
     useEffect(() => {
         if (cartProducts) {
-            const existingIndex = cartProducts.findIndex(item => item.productId === product.id);
+            const existingIndex = cartProducts.findIndex(item => item.productId === product.productId);
             setIsProductInCart(existingIndex > -1);
         }
-    }, [cartProducts, product.id]);
+    }, [cartProducts, product.productId]);
 
     const [quantity, setQuantity] = useState(1);
 
@@ -60,8 +63,25 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
     if (!product) return <div>Loading...</div>;
 
     const categoryNames = product.productCategories.map(cat => cat.categoryName).join(', ');
- const router = useRouter();
-  
+
+    const handleAddToCart = async () => {
+        setIsAddingToCart(true);
+        setSuccessMessage(null); // Clear any previous success message
+
+        try {
+            await handleAddProductToCart({
+                productId: product.productId,
+                quantity
+            });
+
+            setSuccessMessage('Product successfully added to cart!');
+        } catch (error) {
+            console.error('Error adding product to cart:', error);
+            // Optionally log the error but do not display it
+        } finally {
+            setIsAddingToCart(false);
+        }
+    };
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -83,8 +103,14 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                 <div>
                     <span className="font-semibold">Stock Quantity: </span> {product.stockQuantity}
                 </div>
-             
+
                 <Horizontal />
+                {successMessage && (
+                    <p className='mb-2 text-teal-400 flex items-center gap-1'>
+                        <MdCheckCircle size={20} />
+                        <span>{successMessage}</span>
+                    </p>
+                )}
                 {isProductInCart ? (
                     <>
                         <p className='mb-2 text-slate-500 flex items-center gap-1'>
@@ -106,9 +132,8 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                         <div>
                             <Button 
                                 label='Add To Cart' 
-                                onClick={() => handleAddProductToCart({ 
-                                    productId: product.id, 
-                                    quantity                               })} 
+                                onClick={handleAddToCart} 
+                                disabled={isAddingToCart} 
                             />
                         </div>
                     </>

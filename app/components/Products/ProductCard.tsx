@@ -1,12 +1,11 @@
 "use client";
-
 import Rating from '@mui/material/Rating';
 import Image from 'next/image';
 import Link from 'next/link';
 
 interface ProductCardProps {
   data: {
-    productId: number;
+    productId: number; 
     name: string;
     price: number;
     productImage: string;
@@ -17,7 +16,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
   const defaultImage = '/path/to/placeholder-image.jpg'; // Yer tutucu resim yolu
 
   return (
-    <Link href={`/product/${data.productId}`}>
+    <Link href={`/product/${data.productId}`}> 
       <div
         className="flex flex-col
         border-[1.2px]

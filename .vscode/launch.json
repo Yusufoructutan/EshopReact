@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "chrome",
+        "request": "launch",
+        "name": "Launch Chrome against localhost",
+        "url": "http://localhost:3000", // Eğer uygulamanız farklı bir portta çalışıyorsa, bu değeri güncelleyin
+        "webRoot": "${workspaceFolder}/src", // TSX dosyalarının bulunduğu dizin
+        "sourceMapPathOverrides": {
+          "webpack:///./src/*": "${webRoot}/*" // Webpack kaynak haritaları için
+        }
+      }
+    ]
+  }
+  

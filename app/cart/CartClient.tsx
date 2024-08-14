@@ -2,9 +2,8 @@
 
 import Link from "next/link";
 import { MdArrowBack } from "react-icons/md";
-import Button from "../components/Products/Button";
-import ItemContent from "./ItemContent";
 import { useEffect, useState } from "react";
+import Button from "../components/Buttons/Button";
 
 interface Cart {
     cartItemId: number;
@@ -29,10 +28,16 @@ const CartClient = () => {
 
     useEffect(() => {
         const fetchProducts = async () => {
+            const token = localStorage.getItem('token'); // Token'ı localStorage'dan alın
+
+            if (!token) {
+                setError('User not authenticated');
+                setLoading(false);
+                return;
+            }
+
             try {
-                const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Ill1c3VmIiwibmFtZWlkIjoiMSIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTcyMzQxMDkwMSwiZXhwIjoxNzIzNDE0NTAxLCJpYXQiOjE3MjM0MTA5MDEsImlzcyI6InlvdXJJc3N1ZXIiLCJhdWQiOiJ5b3VyQXVkaWVuY2UifQ.UmJ5PIbdNDuSuGX82QsN-3Rg_Mf-nBcXWgvFE2DTruk';
-                
-                // Cart verilerini çek  
+                // Cart verilerini çek
                 const cartResponse = await fetch('https://localhost:7125/api/Cart', {
                     method: 'GET',
                     headers: {
@@ -40,13 +45,13 @@ const CartClient = () => {
                         'Content-Type': 'application/json'
                     }
                 });
-        
+
                 if (!cartResponse.ok) {
                     throw new Error('Failed to fetch cart data');
                 }
-        
+
                 const cartData: Cart[] = await cartResponse.json();
-        
+
                 // Ürün detaylarını çek
                 const productDetailsPromises = cartData.map(async (item: Cart) => {
                     try {
@@ -80,7 +85,7 @@ const CartClient = () => {
                 });
 
                 const productDetails = await Promise.all(productDetailsPromises);
-        
+
                 const validData: CartProductType[] = productDetails.filter(
                     (item): item is CartProductType => item !== null
                 );
@@ -98,9 +103,14 @@ const CartClient = () => {
     }, []);
 
     const updateQuantity = async (cartItemId: number, newQuantity: number) => {
+        const token = localStorage.getItem('token'); // Token'ı localStorage'dan alın
+
+        if (!token) {
+            setError('User not authenticated');
+            return;
+        }
+
         try {
-            const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Ill1c3VmIiwibmFtZWlkIjoiMSIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTcyMzQxMDkwMSwiZXhwIjoxNzIzNDE0NTAxLCJpYXQiOjE3MjM0MTA5MDEsImlzcyI6InlvdXJJc3N1ZXIiLCJhdWQiOiJ5b3VyQXVkaWVuY2UifQ.UmJ5PIbdNDuSuGX82QsN-3Rg_Mf-nBcXWgvFE2DTruk';
-            
             const updateResponse = await fetch(`https://localhost:7125/api/Cart/${cartItemId}`, {
                 method: 'PUT',
                 headers: {
@@ -112,11 +122,11 @@ const CartClient = () => {
                     quantity: newQuantity
                 })
             });
-    
+
             if (!updateResponse.ok) {
                 throw new Error('Failed to update quantity');
             }
-    
+
             setCarts(prevCarts => 
                 prevCarts.map(cartItem =>
                     cartItem.cartItemId === cartItemId
@@ -130,9 +140,14 @@ const CartClient = () => {
     };
 
     const deleteItem = async (cartItemId: number) => {
+        const token = localStorage.getItem('token'); // Token'ı localStorage'dan alın
+
+        if (!token) {
+            setError('User not authenticated');
+            return;
+        }
+
         try {
-                const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Ill1c3VmIiwibmFtZWlkIjoiMSIsInJvbGUiOiJBZG1pbiIsIm5iZiI6MTcyMzQxMDkwMSwiZXhwIjoxNzIzNDE0NTAxLCJpYXQiOjE3MjM0MTA5MDEsImlzcyI6InlvdXJJc3N1ZXIiLCJhdWQiOiJ5b3VyQXVkaWVuY2UifQ.UmJ5PIbdNDuSuGX82QsN-3Rg_Mf-nBcXWgvFE2DTruk';
-            
             const deleteResponse = await fetch(`https://localhost:7125/api/Cart/${cartItemId}`, {
                 method: 'DELETE',
                 headers: {
@@ -140,17 +155,17 @@ const CartClient = () => {
                     'Content-Type': 'application/json'
                 }
             });
-    
+
             if (!deleteResponse.ok) {
                 throw new Error('Failed to delete item');
             }
-    
+
             setCarts(prevCarts => prevCarts.filter(cartItem => cartItem.cartItemId !== cartItemId));
         } catch (error: any) {
             console.error('Error deleting item:', error);
         }
     };
-    
+
     const handleIncrease = (cartItemId: number, currentQuantity: number) => {
         updateQuantity(cartItemId, currentQuantity + 1);
     };
@@ -234,11 +249,9 @@ const CartClient = () => {
                         <span>Subtotal</span>
                         <span>${(carts.reduce((total, item) => total + item.price * item.quantity, 0)).toFixed(2)}</span>
                     </div>
-                    <p className="text-slate-500">Taxes and shipping calculated at checkout</p>
-                    <Button label="Checkout" onClick={() => {}} />
-                    <Link href={"/"} className="text-slate-500 flex items-center gap-1 mt-2">
-                        <MdArrowBack />
-                        <span>Continue Shopping</span>
+                    <p className="text-sm text-slate-400">Shipping and taxes calculated at checkout</p>
+                    <Link href={"/checkout"}>
+                        <Button label="Checkout" onClick={()=>{}} />
                     </Link>
                 </div>
             </div>
