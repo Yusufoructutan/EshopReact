@@ -10,28 +10,32 @@ import {
 
 const Footer = () => {
     return (
-        <footer className="bg-slate-700 text-slate-200 text-sm mt-16">
+        <footer className="bg-gray-800 text-gray-200 text-sm mt-16 py-8">
             <Container>
-                <div className="flex flex-col md:flex-row justify-between pt-16 pb-8">
+                <div className="flex flex-col md:flex-row justify-between items-start gap-8 md:gap-16">
                     <FooterList>
-                        <h3 className="text-base font-bold mb-2">Mağaza Kategorileri</h3>
-                        <Link href="#">Elektronik</Link>
-                        <Link href="#">Kozmetik</Link>
-                        <Link href="#">Mutfak Eşyaları</Link>
-                        <Link href="#">Oyun</Link>
+                        <h3 className="text-lg font-semibold mb-4">Mağaza Kategorileri</h3>
+                        <ul className="space-y-2">
+                            <li><Link href="#" className="hover:text-yellow-400 transition-colors">Elektronik</Link></li>
+                            <li><Link href="#" className="hover:text-yellow-400 transition-colors">Kozmetik</Link></li>
+                            <li><Link href="#" className="hover:text-yellow-400 transition-colors">Mutfak Eşyaları</Link></li>
+                            <li><Link href="#" className="hover:text-yellow-400 transition-colors">Oyun</Link></li>
+                        </ul>
                     </FooterList>
 
                     <FooterList>
-                        <h3 className="text-base font-bold mb-2">Müşteri Hizmetleri</h3>
-                        <Link href="#">Bize Ulaşın</Link>
-                        <Link href="#">Shipping Policy</Link>
-                        <Link href="#">Kargo Politikası</Link>
-                        <Link href="#">FAQs</Link>
+                        <h3 className="text-lg font-semibold mb-4">Müşteri Hizmetleri</h3>
+                        <ul className="space-y-2">
+                            <li><Link href="#" className="hover:text-yellow-400 transition-colors">Bize Ulaşın</Link></li>
+                            <li><Link href="#" className="hover:text-yellow-400 transition-colors">Shipping Policy</Link></li>
+                            <li><Link href="#" className="hover:text-yellow-400 transition-colors">Kargo Politikası</Link></li>
+                            <li><Link href="#" className="hover:text-yellow-400 transition-colors">FAQs</Link></li>
+                        </ul>
                     </FooterList>
 
                     <div className="w-full md:w-1/3 mb-6 md:mb-0">
-                        <h3 className="text-base font-bold mb-2">Hakkımızda</h3>
-                        <p className="mb-2">
+                        <h3 className="text-lg font-semibold mb-4">Hakkımızda</h3>
+                        <p className="mb-4">
                             Elit Market olarak kendimizi e-ticaret alanında yenilikçi çözümler sunmaya adadık. 
                             Sektör trendlerinin önünde olmak için çabalıyoruz ve müşterilerimizin beklentilerini aşan olağanüstü sonuçlar sunmak için çalışıyoruz.
                         </p>
@@ -39,19 +43,19 @@ const Footer = () => {
                     </div>
 
                     <FooterList>
-                        <h3 className="text-base font-bold mb-2">Bizi Takip Edin</h3>
-                        <div className="flex gap-2">
-                            <Link href="#">
-                                <MdFacebook size={24} />
+                        <h3 className="text-lg font-semibold mb-4">Bizi Takip Edin</h3>
+                        <div className="flex gap-4">
+                            <Link href="#" className="text-gray-300 hover:text-blue-600 transition-colors">
+                                <MdFacebook size={28} />
                             </Link>
-                            <Link href="#">
-                                <AiFillTwitterCircle size={24} />
+                            <Link href="#" className="text-gray-300 hover:text-blue-400 transition-colors">
+                                <AiFillTwitterCircle size={28} />
                             </Link>
-                            <Link href="#">
-                                <AiFillInstagram size={24} />
+                            <Link href="#" className="text-gray-300 hover:text-pink-500 transition-colors">
+                                <AiFillInstagram size={28} />
                             </Link>
-                            <Link href="#">
-                                <AiFillYoutube size={24} />
+                            <Link href="#" className="text-gray-300 hover:text-red-600 transition-colors">
+                                <AiFillYoutube size={28} />
                             </Link>
                         </div>
                     </FooterList>

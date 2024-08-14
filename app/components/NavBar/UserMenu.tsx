@@ -1,38 +1,46 @@
-'use client'
+'use client';
 
-import { useAuth } from '@/app/context/AuthContext'
-import Link from 'next/link'
-import { FaUser, FaSignOutAlt, FaSignInAlt, FaUserPlus } from 'react-icons/fa'
-import { useState, useRef, useEffect } from 'react'
+import { useAuth } from '@/app/context/AuthContext';
+import Link from 'next/link';
+import { FaUser, FaSignOutAlt, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
+import { useState, useRef, useEffect } from 'react';
+import Modal from './Modal'; // Modal bileşenini içe aktar
 
 const UserMenu: React.FC = () => {
-  const { isLoggedIn, logout } = useAuth()
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false)
-  const menuRef = useRef<HTMLDivElement>(null)
+  const { isLoggedIn, logout } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const toggleMenu = () => {
-    setIsMenuOpen(prev => !prev)
-  }
+    setIsMenuOpen(prev => !prev);
+  };
 
   const handleLogout = () => {
-    if (window.confirm('Çıkış yapmak istediğinize emin misiniz?')) {
-      logout()
-    }
-  }
+    setIsModalOpen(true); // Modal'ı aç
+  };
 
-  // Close the menu if clicking outside of it
+  const handleConfirmLogout = () => {
+    logout();
+    setIsModalOpen(false); // Modal'ı kapat
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false); // Modal'ı kapat
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false)
+        setIsMenuOpen(false);
       }
-    }
+    };
 
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [])
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div className="relative flex items-center gap-4">
@@ -78,8 +86,13 @@ const UserMenu: React.FC = () => {
           </div>
         )}
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmLogout}
+      />
     </div>
-  )
-}
+  );
+};
 
-export default UserMenu
+export default UserMenu;

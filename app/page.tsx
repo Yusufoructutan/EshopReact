@@ -1,6 +1,6 @@
 import Container from "./components/container";
 import HomeBanner from "./components/NavBar/HomeBanner";
-import ProductsList from "./components/Pages/ProductList";
+import ProductsList from "./components/Products/ProductList";
 import { useAuth } from "./context/AuthContext";
 
 

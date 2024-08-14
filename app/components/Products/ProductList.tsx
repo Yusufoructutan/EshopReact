@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import ProductCard from '../Products/ProductCard';
+import ProductCard from './ProductCard';
 
 interface Product {
     productId: number;
@@ -47,7 +47,7 @@ const ProductsList = () => {
     <div>
       <div className="grid grid-cols-3 gap-4">
         {products.map(product => (
-          <ProductCard key={product.id} data={product} />
+          <ProductCard key={product.productId} data={product} />
         ))}
       </div>
     </div>

@@ -53,7 +53,7 @@ const RegisterForm = () => {
 
     return (
         <>
-            <h1>Sign up For E-shop</h1>
+            <h1 className="text-4xl font-bold text-center mt-8 mb-6">Sign up For E-shop</h1>
             <hr className="bg-slate-300 w-full h-px" />
             <Input
                 id="name"
