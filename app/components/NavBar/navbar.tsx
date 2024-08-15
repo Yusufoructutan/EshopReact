@@ -1,3 +1,6 @@
+// components/Navbar.tsx
+'use client';
+
 import Container from "../container";
 import Link from "next/link";
 import { Redressed } from "next/font/google";
@@ -9,6 +12,10 @@ import HamburgerMenu from "./HamburgerMenu";
 const redressed = Redressed({ subsets: ['latin'], weight: ["400"] });
 
 const Navbar: React.FC = () => {
+    const handleSearch = (searchTerm: string) => {
+        console.log('Searching for:', searchTerm);
+    };
+
     return (
         <div className="sticky top-0 w-full bg-white z-30 shadow-md border-b border-gray-200">
             <div className="py-4">
@@ -21,7 +28,7 @@ const Navbar: React.FC = () => {
                             </Link>
                         </div>
                         <div className="hidden md:block">
-                            <Search />
+                            <Search onSearch={handleSearch} />
                         </div>
                         <div className="flex items-center gap-8 md:gap-12">
                             <CartCount />
@@ -32,6 +39,6 @@ const Navbar: React.FC = () => {
             </div>
         </div>
     );
-}
+};
 
 export default Navbar;

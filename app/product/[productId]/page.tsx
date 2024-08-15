@@ -27,16 +27,13 @@ const ProductPage = ({ params }: { params: { productId: string } }) => {
     useEffect(() => {
         const fetchProduct = async () => {
             if (productId) {
-                try {
-                    const response = await fetch(`https://localhost:7125/api/Product/${productId}`);
-                    if (!response.ok) {
-                        throw new Error('Error fetching product');
-                    }
-                    const data: Product = await response.json();
+                fetch(`https://localhost:7125/api/Product/${productId}`).then(async (res) => {
+                    const data: Product = await res.json();
                     setProduct(data);
-                } catch (error) {
+
+                }).catch((error) => {
                     console.error('Error fetching product:', error);
-                }
+                })
             }
         };
 

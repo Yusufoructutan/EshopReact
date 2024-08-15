@@ -1,9 +1,14 @@
+// components/Search.tsx
 'use client';
 
 import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 
-const Search: React.FC = () => {
+interface SearchProps {
+    onSearch: (term: string) => void;
+}
+
+const Search: React.FC<SearchProps> = ({ onSearch }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -11,12 +16,11 @@ const Search: React.FC = () => {
     };
 
     const handleSearch = () => {
-        // Arama işlemini burada yapabilirsiniz
-        console.log('Searching for:', searchTerm);
+        onSearch(searchTerm);
     };
 
     return (
-        <div className="flex items-center border border-gray-300 rounded-full px-10 py-3 bg-white shadow-lg  max-w-lg">
+        <div className="flex items-center border border-gray-300 rounded-full px-10 py-3 bg-white shadow-lg max-w-lg">
             <FaSearch className="text-gray-500 text-xl mr-3" />
             <input
                 type="text"

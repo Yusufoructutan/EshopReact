@@ -16,7 +16,6 @@ const CarCount = () => {
       <span className="absolute
         top-[-10px]
         right-[-10px]
-        bg-slate-700
         text-white
         h-6
         w-6
@@ -25,7 +24,7 @@ const CarCount = () => {
         items-center
         justify-center
         text-sm">
-        {cartTotalQty}
+        {}
       </span>
     </div>
   );

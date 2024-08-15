@@ -1,3 +1,7 @@
+// components/Footer/footer.tsx
+
+'use client'; // Bu direktifin kullanılması gerekir
+
 import Link from "next/link";
 import Container from "../container";
 import FooterList from "./FooterList";
@@ -7,8 +11,17 @@ import {
     AiFillInstagram,
     AiFillYoutube,
 } from "react-icons/ai";
+import { useRouter } from "next/navigation"; // Doğru modül
 
 const Footer = () => {
+    const router = useRouter(); // useRouter kullanımı
+
+    const handleCategoryClick = (categoryId: number) => {
+        // Konsola log ekleyin, kategori ID'sini kontrol edin
+        console.log(`Navigating to /category/${categoryId}`);
+        router.push(`/category/${categoryId}`);
+    };
+
     return (
         <footer className="bg-gray-800 text-gray-200 text-sm mt-16 py-8">
             <Container>
@@ -16,10 +29,11 @@ const Footer = () => {
                     <FooterList>
                         <h3 className="text-lg font-semibold mb-4">Mağaza Kategorileri</h3>
                         <ul className="space-y-2">
-                            <li><Link href="#" className="hover:text-yellow-400 transition-colors">Elektronik</Link></li>
-                            <li><Link href="#" className="hover:text-yellow-400 transition-colors">Kozmetik</Link></li>
-                            <li><Link href="#" className="hover:text-yellow-400 transition-colors">Mutfak Eşyaları</Link></li>
-                            <li><Link href="#" className="hover:text-yellow-400 transition-colors">Oyun</Link></li>
+                            <li><button onClick={() => handleCategoryClick(1)} className="hover:text-yellow-400 transition-colors">Elektronik</button></li>
+                            <li><button onClick={() => handleCategoryClick(2)} className="hover:text-yellow-400 transition-colors">Giyim</button></li>
+                            <li><button onClick={() => handleCategoryClick(3)} className="hover:text-yellow-400 transition-colors">Mutfak Eşyaları</button></li>
+                            <li><button onClick={() => handleCategoryClick(4)} className="hover:text-yellow-400 transition-colors">Oyun</button></li>
+                            <li><button onClick={() => handleCategoryClick(5)} className="hover:text-yellow-400 transition-colors">Kozmetik</button></li>
                         </ul>
                     </FooterList>
 

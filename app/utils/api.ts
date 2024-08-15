@@ -22,3 +22,9 @@ export const fetchProductsByCategory = async (categoryId: number): Promise<Produ
   }
   return response.json();
 };
+
+
+
+
+
+
