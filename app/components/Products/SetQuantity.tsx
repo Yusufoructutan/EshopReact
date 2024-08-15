@@ -1,11 +1,6 @@
 // app/components/Products/SetQuantity.tsx
 "use client";
 
-interface SetQtyProps {
-    quantity: number;
-    handleQtyIncrease: () => void;
-    handleQtyDecrease: () => void;
-}
 
 const btnStyles = 'border-[1.2px] border-slate-300 px-2 rounded';
 

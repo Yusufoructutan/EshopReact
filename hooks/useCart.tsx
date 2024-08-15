@@ -1,20 +1,20 @@
 import { createContext, useCallback, useContext, useState } from "react";
 import toast from "react-hot-toast";
 
-export interface CartProductType {
-    cartItemId: number; // Unique ID for cart items
+export interface CartProductType {      // Sepetteki ürünleri temsil eder
+    cartItemId: number; 
     productId: number;
-    quantity: number; // Number type for quantity
+    quantity: number; 
 }
 
 interface CartCreateType {
-    productId: number;
-    quantity: number; // Number type for quantity
+    productId: number;                  // Sepete ürün eklemek için gerekli veriler
+    quantity: number; 
 }
 
 type CartContextType = {
     cartTotalQty: number;
-    cartProducts: CartProductType[]; // `null` yerine boş dizi
+    cartProducts: CartProductType[];   // Sepetin toplam ürün miktarını ve sepetteki ürünleri yönetir
     handleAddProductToCart: (product: CartCreateType) => Promise<void>;
     handleRemoveProductFromCart: (cartItemId: number) => Promise<void>;
 };
@@ -27,9 +27,8 @@ interface Props {
 
 export const CartContextProvider: React.FC<Props> = ({ children }) => {
     const [cartTotalQty, setCartTotalQty] = useState(0);
-    const [cartProducts, setCartProducts] = useState<CartProductType[]>([]); // Başlangıçta boş dizi
+    const [cartProducts, setCartProducts] = useState<CartProductType[]>([]); 
 
-    // Backend API URL
     const apiUrl = 'https://localhost:7125/api/Cart';
 
     const handleAddProductToCart = useCallback(async (product: CartCreateType) => {
@@ -50,29 +49,28 @@ export const CartContextProvider: React.FC<Props> = ({ children }) => {
     
             if (response.ok) {
                 const result = await response.json();
-                toast.success("Product added to cart");
+                toast.success("Ürün sepete eklendi.");
                 // Sepeti güncellemek için mevcut veriyi alabilirsiniz
             } else {
                 const error = await response.text();
-                toast.error(`Failed to add product to cart: ${error}`);
+                toast.error(`Ürün sepete eklenemedi: ${error}`);
             }
         } catch (error) {
-            toast.error(`An error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            toast.error(`Bir hata oluştu: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
         }
     }, []);
     
-
     const handleRemoveProductFromCart = useCallback(async (cartItemId: number) => {
         try {
             const response = await fetch(`${apiUrl}/${cartItemId}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`, // Eğer token ile korunuyorsa
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`, 
                 },
             });
 
             if (response.ok) {
-                toast.success("Product removed from cart");
+                toast.success("Ürün sepetten kaldırıldı.");
                 setCartProducts(prev => {
                     const updatedCart = prev.filter(item => item.cartItemId !== cartItemId);
                     setCartTotalQty(updatedCart.length);
@@ -80,10 +78,10 @@ export const CartContextProvider: React.FC<Props> = ({ children }) => {
                 });
             } else {
                 const error = await response.text();
-                toast.error(`Failed to remove product from cart: ${error}`);
+                toast.error(`Ürün sepetten kaldırılamadı: ${error}`);
             }
         } catch (error) {
-            toast.error(`An error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            toast.error(`Bir hata oluştu: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
         }
     }, []);
 
@@ -101,7 +99,7 @@ export const useCart = () => {
     const context = useContext(CartContext);
 
     if (context === null) {
-        throw new Error("useCart must be used within a CartContextProvider");
+        throw new Error("useCart, CartContextProvider içinde kullanılmalıdır.");
     }
 
     return context;

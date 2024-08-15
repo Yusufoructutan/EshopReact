@@ -3,11 +3,7 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-interface AuthContextProps {
-  isLoggedIn: boolean;
-  login: (token: string) => void;
-  logout: () => void;
-}
+
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
@@ -16,7 +12,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const router = useRouter();
 
   useEffect(() => {
-    // Check if token exists in localStorage
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
   }, []);

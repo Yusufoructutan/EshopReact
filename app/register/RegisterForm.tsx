@@ -4,8 +4,8 @@ import { useState } from "react";
 import Input from "../components/inputs/Input";
 import { FieldValues, useForm } from "react-hook-form";
 import Button from "../components/Buttons/Button";
-import { useRouter } from 'next/navigation'; // Kullanıcıyı yönlendirmek için
-import Link from 'next/link';
+import { useRouter } from 'next/navigation'; // Yönlendirme için
+import Link from 'next/link'; // Sayfalar arası geçiş yapmaya yarar
 
 const RegisterForm = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +18,7 @@ const RegisterForm = () => {
         formState: { errors },
     } = useForm<FieldValues>({
         defaultValues: {
-            name: "",
+            username: "", 
             email: "",
             password: ""
         }
@@ -29,17 +29,21 @@ const RegisterForm = () => {
         setError(null);
 
         try {
-            // Backend API URL'sini kendi sunucunuzun URL'si ile değiştirin
             const response = await fetch('https://localhost:7125/api/User/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify({
+                    username: data.username, // Kullanıcı adı
+                    email: data.email,
+                    password: data.password
+                }),
             });
 
             if (!response.ok) {
-                throw new Error('Kayıt başarısız');
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Kayıt başarısız');
             }
 
             // Kayıt başarılı olduğunda
@@ -56,8 +60,8 @@ const RegisterForm = () => {
             <h1 className="text-4xl font-bold text-center mt-8 mb-6">Sign up For E-shop</h1>
             <hr className="bg-slate-300 w-full h-px" />
             <Input
-                id="name"
-                label="Name"
+                id="username"
+                label="Username"
                 disabled={isLoading}
                 register={register}
                 errors={errors}

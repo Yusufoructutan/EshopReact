@@ -1,5 +1,5 @@
 // types.ts
-export interface RegisterFormValues {
+ interface RegisterFormValues {
     name: string;
     email: string;
     password: string;

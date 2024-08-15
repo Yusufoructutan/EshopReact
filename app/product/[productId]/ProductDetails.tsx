@@ -65,6 +65,12 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
     const categoryNames = product.productCategories.map(cat => cat.categoryName).join(', ');
 
     const handleAddToCart = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            router.push('/login');
+            return;
+        }
+
         setIsAddingToCart(true);
         setSuccessMessage(null); // Clear any previous success message
 

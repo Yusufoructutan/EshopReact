@@ -1,75 +1,33 @@
+
+
 'use client';
 
 import Link from "next/link";
 import { MdArrowBack } from "react-icons/md";
 import { useEffect, useState } from "react";
+import { useRouter } from 'next/navigation';
 import Button from "../components/Buttons/Button";
-
-interface Cart {
-    cartItemId: number;
-    userId: number;
-    productId: number;
-    quantity: number;
-}
-
-interface CartProductType {
-    cartItemId: number;
-    productId: number;
-    name: string;
-    price: number;
-    productImage: string;
-    quantity: number;
-}
+import { deleteCartItem, fetchCartData, fetchProductDetails, updateCartQuantity } from "../utils/cartUtils";
 
 const CartClient = () => {
     const [carts, setCarts] = useState<CartProductType[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>("");
+    const router = useRouter();
 
     useEffect(() => {
         const fetchProducts = async () => {
-            const token = localStorage.getItem('token'); // Token'ı localStorage'dan alın
-
+            const token = localStorage.getItem('token');
             if (!token) {
-                setError('User not authenticated');
-                setLoading(false);
+                router.push('/login');
                 return;
             }
 
             try {
-                // Cart verilerini çek
-                const cartResponse = await fetch('https://localhost:7125/api/Cart', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!cartResponse.ok) {
-                    throw new Error('Failed to fetch cart data');
-                }
-
-                const cartData: Cart[] = await cartResponse.json();
-
-                // Ürün detaylarını çek
-                const productDetailsPromises = cartData.map(async (item: Cart) => {
+                const cartData: Cart[] = await fetchCartData(token);
+                const productDetailsPromises = cartData.map(async (item) => {
                     try {
-                        const productResponse = await fetch(`https://localhost:7125/api/Product/${item.productId}`, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Content-Type': 'application/json'
-                            }
-                        });
-
-                        if (!productResponse.ok) {
-                            console.error(`Failed to fetch product ${item.productId}. Status: ${productResponse.status}`);
-                            return null;
-                        }
-
-                        const product = await productResponse.json();
-                        
+                        const product = await fetchProductDetails(item.productId, token);
                         return {
                             cartItemId: item.cartItemId,
                             productId: item.productId,
@@ -79,55 +37,37 @@ const CartClient = () => {
                             quantity: item.quantity
                         };
                     } catch (error: any) {
-                        console.error(`Error fetching details for product ${item.productId}:`, error);
+                        console.error(`Ürün ${item.productId} detayları alınırken hata oluştu:`, error);
                         return null;
                     }
                 });
 
                 const productDetails = await Promise.all(productDetailsPromises);
-
                 const validData: CartProductType[] = productDetails.filter(
                     (item): item is CartProductType => item !== null
                 );
-
                 setCarts(validData);
             } catch (error: any) {
-                console.error('Error fetching products:', error);
-                setError("An error occurred while fetching products.");
+                console.error('Ürünleri çekerken hata oluştu:', error);
+                setError("Ürünler alınırken bir hata oluştu.");
             } finally {
                 setLoading(false);
             }
         };
 
         fetchProducts();
-    }, []);
+    }, [router]);
 
-    const updateQuantity = async (cartItemId: number, newQuantity: number) => {
-        const token = localStorage.getItem('token'); // Token'ı localStorage'dan alın
-
+    const handleUpdateQuantity = async (cartItemId: number, newQuantity: number) => {
+        const token = localStorage.getItem('token');
         if (!token) {
-            setError('User not authenticated');
+            setError('Kullanıcı doğrulanmamış.');
             return;
         }
 
         try {
-            const updateResponse = await fetch(`https://localhost:7125/api/Cart/${cartItemId}`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    cartItemId: cartItemId,
-                    quantity: newQuantity
-                })
-            });
-
-            if (!updateResponse.ok) {
-                throw new Error('Failed to update quantity');
-            }
-
-            setCarts(prevCarts => 
+            await updateCartQuantity(cartItemId, newQuantity, token);
+            setCarts(prevCarts =>
                 prevCarts.map(cartItem =>
                     cartItem.cartItemId === cartItemId
                         ? { ...cartItem, quantity: newQuantity }
@@ -135,49 +75,41 @@ const CartClient = () => {
                 )
             );
         } catch (error: any) {
-            console.error('Error updating quantity:', error);
+            console.error('Miktar güncellenirken hata oluştu:', error);
         }
     };
 
-    const deleteItem = async (cartItemId: number) => {
-        const token = localStorage.getItem('token'); // Token'ı localStorage'dan alın
-
+    const handleDeleteItem = async (cartItemId: number) => {
+        const token = localStorage.getItem('token');
         if (!token) {
-            setError('User not authenticated');
+            setError('Kullanıcı doğrulanmamış.');
             return;
         }
 
         try {
-            const deleteResponse = await fetch(`https://localhost:7125/api/Cart/${cartItemId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!deleteResponse.ok) {
-                throw new Error('Failed to delete item');
-            }
-
+            await deleteCartItem(cartItemId, token);
             setCarts(prevCarts => prevCarts.filter(cartItem => cartItem.cartItemId !== cartItemId));
         } catch (error: any) {
-            console.error('Error deleting item:', error);
+            console.error('Ürün silinirken hata oluştu:', error);
         }
     };
 
     const handleIncrease = (cartItemId: number, currentQuantity: number) => {
-        updateQuantity(cartItemId, currentQuantity + 1);
+        handleUpdateQuantity(cartItemId, currentQuantity + 1);
     };
 
     const handleDecrease = (cartItemId: number, currentQuantity: number) => {
         if (currentQuantity > 1) {
-            updateQuantity(cartItemId, currentQuantity - 1);
+            handleUpdateQuantity(cartItemId, currentQuantity - 1);
         }
     };
 
+    const calculateTotal = () => {
+        return carts.reduce((total, item) => total + (item.price * item.quantity), 0);
+    };
+
     if (loading) {
-        return <div>Loading...</div>;
+        return <div>Yükleniyor...</div>;
     }
 
     if (error) {
@@ -187,11 +119,11 @@ const CartClient = () => {
     if (carts.length === 0) {
         return (
             <div className="flex flex-col items-center">
-                <div className="text-2xl">Your Cart is empty</div>
+                <div className="text-2xl">Sepetiniz boş</div>
                 <div>
                     <Link href={"/"} className="text-slate-500 flex items-center gap-1 mt-2">
                         <MdArrowBack />
-                        <span>Start Shopping</span>
+                        <span>Alışverişe Başla</span>
                     </Link>
                 </div>
             </div>
@@ -200,12 +132,12 @@ const CartClient = () => {
 
     return (
         <div>
-            <h1 className="text-4xl font-bold text-center mt-8 mb-6">Shopping Cart</h1>
+            <h1 className="text-4xl font-bold text-center mt-8 mb-6">Alışveriş Sepeti</h1>
             <div className="grid grid-cols-4 text-xs gap-4 pb-2 items-center mt-20 border-b border-gray-300">
-                <div className="font-semibold">PRODUCT</div>
-                <div className="font-semibold">PRICE</div>
-                <div className="font-semibold">QUANTITY</div>
-                <div className="font-semibold">TOTAL</div>
+                <div className="font-semibold">ÜRÜN</div>
+                <div className="font-semibold">FİYAT</div>
+                <div className="font-semibold">MİKTAR</div>
+                <div className="font-semibold">TOPLAM</div>
             </div>
             <div className="space-y-4 mt-4">
                 {carts.map((item) => (
@@ -215,22 +147,22 @@ const CartClient = () => {
                             <span>{item.name}</span>
                             <button 
                                 className="text-red-500"
-                                onClick={() => deleteItem(item.cartItemId)}
+                                onClick={() => handleDeleteItem(item.cartItemId)}
                             >
-                                Remove
+                                Kaldır
                             </button>
                         </div>
                         <span>${item.price.toFixed(2)}</span>
                         <div className="flex items-center space-x-2">
                             <button 
-                                className="bg-gray-200 px-2 py-1 rounded"
+                                className="px-2 py-1 border rounded"
                                 onClick={() => handleDecrease(item.cartItemId, item.quantity)}
                             >
                                 -
                             </button>
                             <span>{item.quantity}</span>
                             <button 
-                                className="bg-gray-200 px-2 py-1 rounded"
+                                className="px-2 py-1 border rounded"
                                 onClick={() => handleIncrease(item.cartItemId, item.quantity)}
                             >
                                 +
@@ -240,20 +172,12 @@ const CartClient = () => {
                     </div>
                 ))}
             </div>
-            <div className="border-t-[1.5px] border-slate-200 py-4 flex justify-between gap-4 mt-20">
-                <div className="w-[90px]">
-                    <Button label="Clear Cart" onClick={() => {}} small outline />
-                </div>
-                <div className="text-sm flex flex-col gap-1 items-start">
-                    <div className="flex justify-between w-full text-base font-semibold">
-                        <span>Subtotal</span>
-                        <span>${(carts.reduce((total, item) => total + item.price * item.quantity, 0)).toFixed(2)}</span>
-                    </div>
-                    <p className="text-sm text-slate-400">Shipping and taxes calculated at checkout</p>
-                    <Link href={"/checkout"}>
-                        <Button label="Checkout" onClick={()=>{}} />
-                    </Link>
-                </div>
+            <div className="flex justify-between mt-6 text-xl font-semibold">
+                <span>Toplam Tutar:</span>
+                <span>${calculateTotal().toFixed(2)}</span>
+            </div>
+            <div className="text-right mt-4">
+                <Button label="Sepeti Onayla" onClick={() => {/* Sepeti onayla işlemini yap */}}  />
             </div>
         </div>
     );

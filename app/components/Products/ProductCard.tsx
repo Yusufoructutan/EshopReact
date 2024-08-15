@@ -3,14 +3,6 @@ import Rating from '@mui/material/Rating';
 import Image from 'next/image';
 import Link from 'next/link';
 
-interface ProductCardProps {
-  data: {
-    productId: number; 
-    name: string;
-    price: number;
-    productImage: string;
-  };
-}
 
 const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
   const defaultImage = '/path/to/placeholder-image.jpg'; // Yer tutucu resim yolu

@@ -31,7 +31,7 @@ export default function RootLayout({
             },
           }}
         />
-        <AuthProvider> {/* AuthProvider'ı buraya ekleyin */}
+        <AuthProvider> 
           <CartProvider>
             <div className='flex flex-col min-h-screen'>
               <NavBar />
