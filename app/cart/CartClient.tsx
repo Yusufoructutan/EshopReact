@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import Link from "next/link";
@@ -7,7 +5,8 @@ import { MdArrowBack } from "react-icons/md";
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/navigation';
 import Button from "../components/Buttons/Button";
-import { deleteCartItem, fetchCartData, fetchProductDetails, updateCartQuantity } from "../utils/cartUtils";
+import { deleteCartItem, fetchCartData, updateCartQuantity } from "../API/cartApi";
+import { fetchProductDetails } from "../API/productApi";
 
 const CartClient = () => {
     const [carts, setCarts] = useState<CartProductType[]>([]);
@@ -108,6 +107,45 @@ const CartClient = () => {
         return carts.reduce((total, item) => total + (item.price * item.quantity), 0);
     };
 
+    const handleCheckout = async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setError('Kullanıcı doğrulanmamış.');
+            return;
+        }
+    
+        try {
+            const response = await fetch('https://localhost:7125/api/Order', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    items: carts.map(item => ({
+                        productId: item.productId,
+                        quantity: item.quantity
+                    })),
+                    totalAmount: calculateTotal()
+                })
+            });
+    
+            if (!response.ok) {
+                throw new Error('Sipariş oluşturulurken hata oluştu.');
+            }
+    
+            // Sipariş ID'sini API yanıtından alın
+            const result = await response.json();
+            const orderId = result.orderId; // API'den dönen sipariş ID'si
+    
+            // Sipariş başarılı bir şekilde oluşturuldu, siparişler sayfasına yönlendir
+            router.push(`/orders/${orderId}`);
+        } catch (error: any) {
+            console.error('Sipariş oluşturulurken hata oluştu:', error);
+            setError('Sipariş oluşturulurken bir hata oluştu.');
+        }
+    };
+    
     if (loading) {
         return <div>Yükleniyor...</div>;
     }
@@ -177,7 +215,7 @@ const CartClient = () => {
                 <span>${calculateTotal().toFixed(2)}</span>
             </div>
             <div className="text-right mt-4">
-                <Button label="Sepeti Onayla" onClick={() => {/* Sepeti onayla işlemini yap */}}  />
+                <Button label="Sepeti Onayla" onClick={handleCheckout} />
             </div>
         </div>
     );

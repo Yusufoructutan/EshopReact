@@ -34,6 +34,7 @@ const Navbar: React.FC = () => {
                             <CartCount />
                             <UserMenu />
                         </div>
+                        
                     </div>
                 </Container>
             </div>

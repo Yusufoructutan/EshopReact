@@ -70,24 +70,25 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
             router.push('/login');
             return;
         }
-
+    
         setIsAddingToCart(true);
-        setSuccessMessage(null); // Clear any previous success message
-
+        setSuccessMessage(null); // Önceki başarı mesajını temizleyin
+    
         try {
             await handleAddProductToCart({
                 productId: product.productId,
                 quantity
             });
-
+    
             setSuccessMessage('Product successfully added to cart!');
         } catch (error) {
             console.error('Error adding product to cart:', error);
-            // Optionally log the error but do not display it
+            setSuccessMessage('Failed to add product to cart.'); // Hata durumunda bir mesaj gösterin
         } finally {
             setIsAddingToCart(false);
         }
     };
+    
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">

@@ -2,33 +2,41 @@
 
 import { useAuth } from '@/app/context/AuthContext';
 import Link from 'next/link';
-import { FaUser, FaSignOutAlt, FaSignInAlt, FaUserPlus } from 'react-icons/fa';
+import { FaUser, FaSignOutAlt, FaSignInAlt, FaUserPlus, FaHeart, FaList } from 'react-icons/fa'; // FaList ikonu eklendi
 import { useState, useRef, useEffect } from 'react';
-import Modal from './Modal'; // Modal bileşenini içe aktar
+import Modal from './Modal';
+import { useRouter } from 'next/navigation';
 
 const UserMenu: React.FC = () => {
   const { isLoggedIn, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
+  // Menü durumunu değiştirir
   const toggleMenu = () => {
     setIsMenuOpen(prev => !prev);
   };
 
+  // Çıkış yapma işlemi için onay modali açılır
   const handleLogout = () => {
-    setIsModalOpen(true); // Modal'ı aç
+    setIsModalOpen(true);
   };
 
+  // Çıkış işlemi onaylandığında
   const handleConfirmLogout = () => {
     logout();
-    setIsModalOpen(false); // Modal'ı kapat
+    setIsModalOpen(false);
+    router.push('/login'); // Kullanıcıyı giriş sayfasına yönlendir
   };
 
+  // Modalı kapatma işlemi
   const handleCloseModal = () => {
-    setIsModalOpen(false); // Modal'ı kapat
+    setIsModalOpen(false);
   };
 
+  // Menü dışına tıklanınca menüyü kapatır
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -58,13 +66,29 @@ const UserMenu: React.FC = () => {
             className="absolute top-full right-0 mt-2 w-48 bg-white border rounded shadow-lg z-10"
           >
             {isLoggedIn ? (
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 w-full text-left"
-              >
-                <FaSignOutAlt />
-                <span>Logout</span>
-              </button>
+              <>
+                <Link
+                  href="/orderPage"
+                  className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 w-full text-left"
+                >
+                  <FaList /> {/* İkon eklendi */}
+                  <span>Siparişlerim</span>
+                </Link>
+                <Link
+                  href="/favorites"
+                  className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 w-full text-left"
+                >
+                  <FaHeart />
+                  <span>Favoriler</span>
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 w-full text-left"
+                >
+                  <FaSignOutAlt />
+                  <span>Logout</span>
+                </button>
+              </>
             ) : (
               <>
                 <Link
@@ -86,6 +110,7 @@ const UserMenu: React.FC = () => {
           </div>
         )}
       </div>
+    
       <Modal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

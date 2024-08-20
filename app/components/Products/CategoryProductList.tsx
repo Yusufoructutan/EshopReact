@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import ProductCard from './ProductCard';
-import { fetchProductsByCategory } from '@/app/utils/api';
+import { fetchProductsByCategory } from '@/app/API/productApi';
 
 interface CategoryProductListProps {
     categoryId: number;
@@ -14,15 +14,10 @@ const CategoryProductList = ({ categoryId }: CategoryProductListProps) => {
     const [error, setError] = useState<string>("");
 
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const data = await fetchProductsByCategory(categoryId);
-                setProducts(data);
-            } catch (error: any) {
-                setError(error.message);
-            } finally {
-                setLoading(false);
-            }
+       
+        const fetchProducts = async () => {     
+        fetchProductsByCategory(categoryId).then((data) => {
+            setProducts(data)}).catch((error) =>{setError(error.message)}) 
         };
 
         fetchProducts();

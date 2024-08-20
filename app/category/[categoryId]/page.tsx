@@ -1,9 +1,9 @@
 'use client'
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { fetchProductsByCategory } from '@/app/utils/api';
 import ProductCard from '@/app/components/Products/ProductCard';
 import { categoryNames } from '@/app/utils/categoryNames';
+import { fetchProductsByCategory } from '@/app/API/productApi';
 
 const CategoryPage = () => {
     const params = useParams();

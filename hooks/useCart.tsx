@@ -1,20 +1,21 @@
+import apiClient from "@/app/API";
 import { createContext, useCallback, useContext, useState } from "react";
 import toast from "react-hot-toast";
 
-export interface CartProductType {      // Sepetteki ürünleri temsil eder
+export interface CartProductType {
     cartItemId: number; 
     productId: number;
     quantity: number; 
 }
 
 interface CartCreateType {
-    productId: number;                  // Sepete ürün eklemek için gerekli veriler
+    productId: number;
     quantity: number; 
 }
 
 type CartContextType = {
     cartTotalQty: number;
-    cartProducts: CartProductType[];   // Sepetin toplam ürün miktarını ve sepetteki ürünleri yönetir
+    cartProducts: CartProductType[];
     handleAddProductToCart: (product: CartCreateType) => Promise<void>;
     handleRemoveProductFromCart: (cartItemId: number) => Promise<void>;
 };
@@ -27,49 +28,22 @@ interface Props {
 
 export const CartContextProvider: React.FC<Props> = ({ children }) => {
     const [cartTotalQty, setCartTotalQty] = useState(0);
-    const [cartProducts, setCartProducts] = useState<CartProductType[]>([]); 
+    const [cartProducts, setCartProducts] = useState<CartProductType[]>([]);
 
-    const apiUrl = 'https://localhost:7125/api/Cart';
-
-    const handleAddProductToCart = useCallback(async (product: CartCreateType) => {
+    const handleAddProductToCart = useCallback(async (product: CartCreateType): Promise<void> => {
         if (product.productId <= 0) {
             toast.error("Geçersiz ürün ID'si.");
-            return;
+            return; // No return value
         }
-    
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                },
-                body: JSON.stringify(product),
-            });
-    
-            if (response.ok) {
-                const result = await response.json();
-                toast.success("Ürün sepete eklendi.");
-                // Sepeti güncellemek için mevcut veriyi alabilirsiniz
-            } else {
-                const error = await response.text();
-                toast.error(`Ürün sepete eklenemedi: ${error}`);
-            }
-        } catch (error) {
-            toast.error(`Bir hata oluştu: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
-        }
-    }, []);
-    
-    const handleRemoveProductFromCart = useCallback(async (cartItemId: number) => {
-        try {
-            const response = await fetch(`${apiUrl}/${cartItemId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`, 
-                },
-            });
 
-            if (response.ok) {
+       
+    }, []);
+
+    const handleRemoveProductFromCart = useCallback(async (cartItemId: number): Promise<void> => {
+        try {
+            const response = await apiClient.delete(`/Cart/${cartItemId}`);
+
+            if (response.status === 200) {
                 toast.success("Ürün sepetten kaldırıldı.");
                 setCartProducts(prev => {
                     const updatedCart = prev.filter(item => item.cartItemId !== cartItemId);
@@ -77,8 +51,7 @@ export const CartContextProvider: React.FC<Props> = ({ children }) => {
                     return updatedCart;
                 });
             } else {
-                const error = await response.text();
-                toast.error(`Ürün sepetten kaldırılamadı: ${error}`);
+                toast.error(`Ürün sepetten kaldırılamadı: ${response.statusText}`);
             }
         } catch (error) {
             toast.error(`Bir hata oluştu: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
