@@ -1,10 +1,11 @@
 "use client";
+
 import Rating from '@mui/material/Rating';
 import Image from 'next/image';
 import Link from 'next/link';
-
 import { useState, useEffect } from 'react';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
+import { useErrorStore } from '@/app/Store/errorStore'; // Import Zustand store hook
 
 // ProductCard için tür tanımı
 interface ProductCardProps {
@@ -18,36 +19,34 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
   const defaultImage = '/path/to/placeholder-image.jpg'; // Yer tutucu görsel yolu
-  // Favori durumu için state tanımlayın
   const [isFavorited, setIsFavorited] = useState(false);
   const [userId, setUserId] = useState<number | null>(null);
+  const { openErrorModal } = useErrorStore(); // Zustand store action
 
-  // Bileşen yüklendiğinde kullanıcı ID'sini ve favori ürün durumunu kontrol edin
   useEffect(() => {
     const token = localStorage.getItem('token');
    
     if (token) {
       // Kullanıcı ID'sini token'dan alın
       const getUserIdFromToken = (token: string) => {
-  
-  
         try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.nameid; // `sub` veya `userId` gibi alanları kontrol edin
-  } catch (error) {
-    console.error("Token ayrıştırılırken bir hata oluştu:", error);
-    return null;
-  }
-};
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          return payload.nameid; // `sub` veya `userId` gibi alanları kontrol edin
+        } catch (error) {
+          console.error("Token ayrıştırılırken bir hata oluştu:", error);
+          openErrorModal("Token ayrıştırılırken bir hata oluştu. Lütfen tekrar deneyin."); // Use Zustand store to open error modal
+          return null;
+        }
+      };
 
       const userId = getUserIdFromToken(token);
-      setUserId(userId);
-
-      // Favori ürünlerin olup olmadığını kontrol edin
-      const favoritedItems = JSON.parse(localStorage.getItem(`favorites_${userId}`) || '[]');
-      setIsFavorited(favoritedItems.includes(data.productId));
+      if (userId !== null) {
+        setUserId(userId);
+        const favoritedItems = JSON.parse(localStorage.getItem(`favorites_${userId}`) || '[]');
+        setIsFavorited(favoritedItems.includes(data.productId));
+      }
     }
-  }, [data.productId]);
+  }, [data.productId, openErrorModal]);
 
   const [showFavoriteMessage, setShowFavoriteMessage] = useState(false);
 
@@ -55,28 +54,26 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
     const token = localStorage.getItem('token');
     
     if (token && userId !== null) {
-      let favoritedItems = JSON.parse(localStorage.getItem(`favorites_${userId}`) || '[]');
+      try {
+        let favoritedItems = JSON.parse(localStorage.getItem(`favorites_${userId}`) || '[]');
   
-      if (isFavorited) {
-        favoritedItems = favoritedItems.filter((id: number) => id !== data.productId);
-      } else {
-        favoritedItems.push(data.productId);
-        setShowFavoriteMessage(true);  // Mesajı göster
-        setTimeout(() => setShowFavoriteMessage(false), 3000);  // Mesajı 3 saniye sonra gizle
+        if (isFavorited) {
+          favoritedItems = favoritedItems.filter((id: number) => id !== data.productId);
+        } else {
+          favoritedItems.push(data.productId);
+          setShowFavoriteMessage(true);  // Mesajı göster
+          setTimeout(() => setShowFavoriteMessage(false), 3000);  // Mesajı 3 saniye sonra gizle
+        }
+  
+        localStorage.setItem(`favorites_${userId}`, JSON.stringify(favoritedItems));
+        setIsFavorited(!isFavorited);
+      } catch (error) {
+        console.error("Favorilere ekleme sırasında bir hata oluştu:", error);
+        openErrorModal("Favorilere eklerken bir hata oluştu. Lütfen tekrar deneyin."); // Use Zustand store to open error modal
       }
-  
-      localStorage.setItem(`favorites_${userId}`, JSON.stringify(favoritedItems));
-      setIsFavorited(!isFavorited);
     }
   };
   
-  // Render içinde:
-  {showFavoriteMessage && (
-    <div className="absolute top-0 left-0 w-full bg-green-500 text-white text-center py-2">
-      Favorilere eklendi!
-    </div>
-  )}
-
   return (
     <Link href={`/product/${data.productId}`}>
       <div

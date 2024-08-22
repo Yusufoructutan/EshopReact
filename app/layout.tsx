@@ -4,8 +4,9 @@ import { Poppins } from 'next/font/google';
 import Footer from './components/Footer/footer';
 import NavBar from './components/NavBar/navbar';
 import CartProvider from '@/providers/CartProvider';
-import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
+import ErrorModal from './components/Modal/ErrorModal';
+import { SearchProvider } from './context/SearchContext';
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400', '700'] });
 
@@ -23,15 +24,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={poppins.className}>
-        <Toaster
-          toastOptions={{
-            style: {
-              background: 'rgb(51 65 85)',
-              color: '#fff',
-            },
-          }}
-        />
-        <AuthProvider> 
+      <SearchProvider>
+     <AuthProvider> 
           <CartProvider>
             <div className='flex flex-col min-h-screen'>
               <NavBar />
@@ -40,6 +34,8 @@ export default function RootLayout({
             </div>
           </CartProvider>
         </AuthProvider>
+        </SearchProvider>
+  <ErrorModal />
       </body>
     </html>
   );

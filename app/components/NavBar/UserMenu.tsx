@@ -4,7 +4,7 @@ import { useAuth } from '@/app/context/AuthContext';
 import Link from 'next/link';
 import { FaUser, FaSignOutAlt, FaSignInAlt, FaUserPlus, FaHeart, FaList } from 'react-icons/fa'; // FaList ikonu eklendi
 import { useState, useRef, useEffect } from 'react';
-import Modal from './Modal';
+import Modal from '../Modal/LogoutModal';
 import { useRouter } from 'next/navigation';
 
 const UserMenu: React.FC = () => {

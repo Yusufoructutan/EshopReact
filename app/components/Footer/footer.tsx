@@ -14,11 +14,9 @@ import {
 import { useRouter } from "next/navigation"; // Doğru modül
 
 const Footer = () => {
-    const router = useRouter(); // useRouter kullanımı
+    const router = useRouter(); 
 
     const handleCategoryClick = (categoryId: number) => {
-        // Konsola log ekleyin, kategori ID'sini kontrol edin
-        console.log(`Navigating to /category/${categoryId}`);
         router.push(`/category/${categoryId}`);
     };
 

@@ -7,12 +7,13 @@ import Button from '../components/Buttons/Button';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
+import { useErrorStore } from '@/app/Store/errorStore'; // Import Zustand store hook
 
 const LoginForm = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const router = useRouter();
     const { login } = useAuth(); // Get login function from context
+    const { openErrorModal } = useErrorStore(); // Use Zustand store action for error modal
 
     const {
         register,
@@ -27,7 +28,6 @@ const LoginForm = () => {
 
     const onSubmit = async (data: FieldValues) => {
         setIsLoading(true);
-        setError(null);
 
         try {
             const response = await fetch('https://localhost:7125/api/User/login', {
@@ -52,7 +52,7 @@ const LoginForm = () => {
             // Redirect based on role or default to home
             router.push('/'); 
         } catch (error: any) {
-            setError(error.message || 'An error occurred');
+            openErrorModal(error.message || 'An error occurred'); // Use Zustand store to open error modal
         } finally {
             setIsLoading(false);
         }
@@ -87,8 +87,6 @@ const LoginForm = () => {
                 onClick={handleSubmit(onSubmit)}
                 disabled={isLoading}
             />
-
-            {error && <p className="text-red-500">{error}</p>}
 
             <p className="text-sm">
                 Do not have an account? <Link href='/register' className="underline">Sign Up</Link>

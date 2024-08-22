@@ -4,13 +4,15 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { fetchOrderById } from './orderApi';
 import { Order } from '@/app/API/orderType';
+import ErrorModal from '@/app/components/Modal/ErrorModal';
+import { useErrorStore } from '@/app/Store/errorStore';
 
 const OrdersClient = () => {
     const [order, setOrder] = useState<Order | null>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string>("");
     const { orderId } = useParams();
     const router = useRouter();
+    const { openErrorModal } = useErrorStore(); // Use error store for modal
 
     useEffect(() => {
         if (!orderId) {
@@ -31,21 +33,17 @@ const OrdersClient = () => {
                 setOrder(orderData);
             } catch (error: any) {
                 console.error('Siparişi çekerken hata oluştu:', error);
-                setError('Sipariş alınırken bir hata oluştu.');
+                openErrorModal('Sipariş alınırken bir hata oluştu.'); // Open error modal
             } finally {
                 setLoading(false);
             }
         };
 
         fetchOrderData();
-    }, [orderId, router]);
+    }, [orderId, router, openErrorModal]);
 
     if (loading) {
         return <div className="text-center text-lg">Yükleniyor...</div>;
-    }
-
-    if (error) {
-        return <div className="text-center text-red-600 font-semibold">{error}</div>;
     }
 
     if (!order) {
@@ -83,6 +81,7 @@ const OrdersClient = () => {
                     <p className="text-gray-600">Ürün bulunamadı.</p>
                 )}
             </div>
+            <ErrorModal /> {/* Render ErrorModal */}
         </div>
     );
 };

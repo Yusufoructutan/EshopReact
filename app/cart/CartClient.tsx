@@ -7,12 +7,14 @@ import { useRouter } from 'next/navigation';
 import Button from "../components/Buttons/Button";
 import { deleteCartItem, fetchCartData, updateCartQuantity } from "../API/cartApi";
 import { fetchProductDetails } from "../API/productApi";
+import ErrorModal from '@/app/components/Modal/ErrorModal'; // ErrorModal import
+import { useErrorStore } from '@/app/Store/errorStore'; // useErrorStore import
 
 const CartClient = () => {
     const [carts, setCarts] = useState<CartProductType[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string>("");
     const router = useRouter();
+    const { openErrorModal } = useErrorStore(); // Use error store for modal
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -48,19 +50,19 @@ const CartClient = () => {
                 setCarts(validData);
             } catch (error: any) {
                 console.error('Ürünleri çekerken hata oluştu:', error);
-                setError("Ürünler alınırken bir hata oluştu.");
+                openErrorModal("Ürünler alınırken bir hata oluştu."); // Open error modal
             } finally {
                 setLoading(false);
             }
         };
 
         fetchProducts();
-    }, [router]);
+    }, [router, openErrorModal]);
 
     const handleUpdateQuantity = async (cartItemId: number, newQuantity: number) => {
         const token = localStorage.getItem('token');
         if (!token) {
-            setError('Kullanıcı doğrulanmamış.');
+            openErrorModal('Kullanıcı doğrulanmamış.'); // Open error modal
             return;
         }
 
@@ -75,13 +77,14 @@ const CartClient = () => {
             );
         } catch (error: any) {
             console.error('Miktar güncellenirken hata oluştu:', error);
+            openErrorModal('Miktar güncellenirken bir hata oluştu.'); // Open error modal
         }
     };
 
     const handleDeleteItem = async (cartItemId: number) => {
         const token = localStorage.getItem('token');
         if (!token) {
-            setError('Kullanıcı doğrulanmamış.');
+            openErrorModal('Kullanıcı doğrulanmamış.'); // Open error modal
             return;
         }
 
@@ -90,6 +93,7 @@ const CartClient = () => {
             setCarts(prevCarts => prevCarts.filter(cartItem => cartItem.cartItemId !== cartItemId));
         } catch (error: any) {
             console.error('Ürün silinirken hata oluştu:', error);
+            openErrorModal('Ürün silinirken bir hata oluştu.'); // Open error modal
         }
     };
 
@@ -110,7 +114,7 @@ const CartClient = () => {
     const handleCheckout = async () => {
         const token = localStorage.getItem('token');
         if (!token) {
-            setError('Kullanıcı doğrulanmamış.');
+            openErrorModal('Kullanıcı doğrulanmamış.'); // Open error modal
             return;
         }
     
@@ -142,16 +146,12 @@ const CartClient = () => {
             router.push(`/orders/${orderId}`);
         } catch (error: any) {
             console.error('Sipariş oluşturulurken hata oluştu:', error);
-            setError('Sipariş oluşturulurken bir hata oluştu.');
+            openErrorModal('Sipariş oluşturulurken bir hata oluştu.'); // Open error modal
         }
     };
     
     if (loading) {
         return <div>Yükleniyor...</div>;
-    }
-
-    if (error) {
-        return <div className="text-red-500">{error}</div>;
     }
 
     if (carts.length === 0) {
@@ -217,6 +217,7 @@ const CartClient = () => {
             <div className="text-right mt-4">
                 <Button label="Sepeti Onayla" onClick={handleCheckout} />
             </div>
+            <ErrorModal /> {/* Render ErrorModal */}
         </div>
     );
 };

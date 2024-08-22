@@ -2,7 +2,6 @@ import Container from "./components/container";
 import HomeBanner from "./components/NavBar/HomeBanner";
 import ProductsList from "./components/Products/ProductList";
 
-
 export default function Home() {
 
   return (
@@ -11,6 +10,7 @@ export default function Home() {
         <div>
           <HomeBanner />
         </div>
+      
         <div>
           <ProductsList />
         </div>

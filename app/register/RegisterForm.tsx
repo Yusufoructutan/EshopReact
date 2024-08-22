@@ -4,13 +4,15 @@ import { useState } from "react";
 import Input from "../components/inputs/Input";
 import { FieldValues, useForm } from "react-hook-form";
 import Button from "../components/Buttons/Button";
-import { useRouter } from 'next/navigation'; // Yönlendirme için
-import Link from 'next/link'; // Sayfalar arası geçiş yapmaya yarar
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import ErrorModal from '@/app/components/Modal/ErrorModal'; // ErrorModal import
+import { useErrorStore } from '@/app/Store/errorStore'; // useErrorStore import
 
 const RegisterForm = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const router = useRouter(); // Yönlendirme için
+    const { openErrorModal } = useErrorStore(); // Use error store for modal
+    const router = useRouter();
 
     const {
         register,
@@ -18,7 +20,7 @@ const RegisterForm = () => {
         formState: { errors },
     } = useForm<FieldValues>({
         defaultValues: {
-            username: "", 
+            username: "",
             email: "",
             password: ""
         }
@@ -26,7 +28,6 @@ const RegisterForm = () => {
 
     const onSubmit = async (data: FieldValues) => {
         setIsLoading(true);
-        setError(null);
 
         try {
             const response = await fetch('https://localhost:7125/api/User/register', {
@@ -35,7 +36,7 @@ const RegisterForm = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    username: data.username, // Kullanıcı adı
+                    username: data.username,
                     email: data.email,
                     password: data.password
                 }),
@@ -46,10 +47,9 @@ const RegisterForm = () => {
                 throw new Error(errorData.message || 'Kayıt başarısız');
             }
 
-            // Kayıt başarılı olduğunda
-            router.push('/login'); // Login sayfasına yönlendir
+            router.push('/login');
         } catch (error: any) {
-            setError(error.message || 'Bir hata oluştu');
+            openErrorModal(error.message || 'Bir hata oluştu'); // Open error modal
         } finally {
             setIsLoading(false);
         }
@@ -92,11 +92,11 @@ const RegisterForm = () => {
                 disabled={isLoading}
             />
 
-            {error && <p className="text-red-500">{error}</p>}
 
             <p className="text-sm">
                 Already have an account? <Link href='/login' className="underline">Log in</Link>
             </p>
+            <ErrorModal /> {/* Render ErrorModal */}
         </>
     );
 }

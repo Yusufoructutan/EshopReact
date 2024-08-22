@@ -12,8 +12,6 @@ export const fetchProductsData = () => {
 };
 
 
-
-
 export const fetchProductsByCategory = (categoryId: number) => {
     return apiClient.get(`/Product/category/${categoryId}`)
         .then(response => response.data)

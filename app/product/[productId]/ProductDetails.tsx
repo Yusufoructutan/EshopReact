@@ -5,8 +5,10 @@ import SetQuantity from "@/app/components/Products/SetQuantity";
 import { Rating } from "@mui/material";
 import { useCart } from '@/hooks/useCart';
 import { MdCheckCircle } from 'react-icons/md';
-import { useRouter } from 'next/navigation'; // Güncellenmiş import
+import { useRouter } from 'next/navigation'; 
 import Button from '@/app/components/Buttons/Button';
+import { useErrorStore } from '@/app/Store/errorStore'; // Import error store
+import ErrorModal from '@/app/components/Modal/ErrorModal';
 
 interface ProductCategory {
     productCategoryId: number;
@@ -36,8 +38,9 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
     const { cartProducts, handleAddProductToCart } = useCart();
     const [isProductInCart, setIsProductInCart] = useState(false);
     const [isAddingToCart, setIsAddingToCart] = useState(false);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const router = useRouter();
+    
+    const { openErrorModal } = useErrorStore(); // Destructure openErrorModal from useErrorStore
 
     useEffect(() => {
         if (cartProducts) {
@@ -60,8 +63,6 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
         }
     }, [quantity]);
 
-    if (!product) return <div>Loading...</div>;
-
     const categoryNames = product.productCategories.map(cat => cat.categoryName).join(', ');
 
     const handleAddToCart = async () => {
@@ -72,24 +73,20 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
         }
     
         setIsAddingToCart(true);
-        setSuccessMessage(null); // Önceki başarı mesajını temizleyin
     
         try {
+
             await handleAddProductToCart({
                 productId: product.productId,
                 quantity
             });
     
-            setSuccessMessage('Product successfully added to cart!');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error adding product to cart:', error);
-            setSuccessMessage('Failed to add product to cart.'); // Hata durumunda bir mesaj gösterin
-        } finally {
-            setIsAddingToCart(false);
-        }
+            openErrorModal(error.message); 
+        } 
     };
     
-
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
@@ -112,12 +109,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                 </div>
 
                 <Horizontal />
-                {successMessage && (
-                    <p className='mb-2 text-teal-400 flex items-center gap-1'>
-                        <MdCheckCircle size={20} />
-                        <span>{successMessage}</span>
-                    </p>
-                )}
+               
                 {isProductInCart ? (
                     <>
                         <p className='mb-2 text-slate-500 flex items-center gap-1'>
@@ -146,6 +138,8 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                     </>
                 )}
             </div>
+
+            <ErrorModal /> 
         </div>
     );
 }

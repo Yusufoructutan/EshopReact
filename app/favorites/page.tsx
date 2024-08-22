@@ -1,14 +1,14 @@
 'use client'
+
 import { useState, useEffect } from 'react';
 import ProductCard from '../components/Products/ProductCard';
 import { fetchProductsData } from '../API/productApi';
-
-
+import { useErrorStore } from '@/app/Store/errorStore'; // Import Zustand store hook
 
 const FavoritesPage = () => {
   const [favorites, setFavorites] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const { openErrorModal } = useErrorStore(); // Zustand store action
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -26,57 +26,47 @@ const FavoritesPage = () => {
       const userId = getUserIdFromToken(token);
       if (userId) {
         const favoritedItems: FavoritedItem[] = JSON.parse(localStorage.getItem(`favorites_${userId}`) || '[]');
-
-
-        const productIds = favoritedItems
-          .map(item => {
-            return item;
-          });
-
+        const productIds = favoritedItems.map(item => item.productId);
 
         fetchProductsData()
           .then((products: Product[]) => {
-
             const favoriteProducts = products.filter(product => productIds.includes(product.productId));
-
             setFavorites(favoriteProducts);
             setLoading(false);
           })
           .catch(error => {
             console.error('Error fetching products:', error);
-            setError('Ürünler alınırken bir hata oluştu.');
+            openErrorModal('Ürünler alınırken bir hata oluştu.'); // Use Zustand store to open error modal
             setLoading(false);
           });
       } else {
-        setError('Geçersiz kullanıcı bilgileri.');
+        openErrorModal('Geçersiz kullanıcı bilgileri.'); // Use Zustand store to open error modal
         setLoading(false);
       }
     } else {
-      setError('Giriş yapmadınız.');
+      openErrorModal('Giriş yapmadınız.'); // Use Zustand store to open error modal
       setLoading(false);
     }
-  }, []);
-
-  if (loading) {
-    return <div>Yükleniyor...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+  }, [openErrorModal]);
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4 text-center">Favorilerim</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {favorites.length > 0 ? (
-          favorites.map((product) => (
-            <ProductCard key={product.productId} data={product} />
-          ))
-        ) : (
-          <p>Favori ürününüz bulunmamaktadır.</p>
-        )}
-      </div>
+      {loading ? (
+        <div>Yükleniyor...</div>
+      ) : (
+        <>
+          <h1 className="text-2xl font-bold mb-4 text-center">Favorilerim</h1>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {favorites.length > 0 ? (
+              favorites.map((product) => (
+                <ProductCard key={product.productId} data={product} />
+              ))
+            ) : (
+              <p>Favori ürününüz bulunmamaktadır.</p>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };
