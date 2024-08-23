@@ -1,4 +1,3 @@
-// hooks/useAuth.ts
 'use client'
 
 import { useAuth } from "@/app/context/AuthContext";

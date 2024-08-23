@@ -7,13 +7,12 @@ import Button from '../components/Buttons/Button';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '../context/AuthContext';
-import { useErrorStore } from '@/app/Store/errorStore'; // Import Zustand store hook
+import { useErrorStore } from '@/app/Store/errorStore'; 
 
 const LoginForm = () => {
-    const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
-    const { login } = useAuth(); // Get login function from context
-    const { openErrorModal } = useErrorStore(); // Use Zustand store action for error modal
+    const { login } = useAuth(); 
+    const { openErrorModal } = useErrorStore(); 
 
     const {
         register,
@@ -27,7 +26,6 @@ const LoginForm = () => {
     });
 
     const onSubmit = async (data: FieldValues) => {
-        setIsLoading(true);
 
         try {
             const response = await fetch('https://localhost:7125/api/User/login', {
@@ -46,26 +44,21 @@ const LoginForm = () => {
             const result = await response.json();
             const token = result.token;
 
-            // Use login function from context
             login(token);
 
-            // Redirect based on role or default to home
             router.push('/'); 
         } catch (error: any) {
-            openErrorModal(error.message || 'An error occurred'); // Use Zustand store to open error modal
-        } finally {
-            setIsLoading(false);
+         
         }
     };
 
     return (
         <>
-            <h1 className="text-4xl font-bold text-center mt-8 mb-6">Sign in to E-shop</h1>
+            <h1 className="text-4xl font-bold text-center mt-8 mb-6">Elit Shop'a Giriş Yap</h1>
             <hr className="bg-slate-300 w-full h-px" />
             <Input
                 id="username"
-                label="Username"
-                disabled={isLoading}
+                label="Kullanıcı Adı"
                 register={register}
                 errors={errors}
                 required
@@ -74,8 +67,7 @@ const LoginForm = () => {
 
             <Input
                 id="password"
-                label="Password"
-                disabled={isLoading}
+                label="Şifre"
                 register={register}
                 errors={errors}
                 required
@@ -83,9 +75,8 @@ const LoginForm = () => {
             />
 
             <Button
-                label={isLoading ? 'Loading' : 'Login'}
+                label={ 'Login'}
                 onClick={handleSubmit(onSubmit)}
-                disabled={isLoading}
             />
 
             <p className="text-sm">

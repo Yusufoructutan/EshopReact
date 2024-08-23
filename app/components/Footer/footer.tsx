@@ -1,6 +1,5 @@
-// components/Footer/footer.tsx
 
-'use client'; // Bu direktifin kullanılması gerekir
+'use client'; 
 
 import Link from "next/link";
 import Container from "../container";
@@ -11,7 +10,7 @@ import {
     AiFillInstagram,
     AiFillYoutube,
 } from "react-icons/ai";
-import { useRouter } from "next/navigation"; // Doğru modül
+import { useRouter } from "next/navigation"; 
 
 const Footer = () => {
     const router = useRouter(); 

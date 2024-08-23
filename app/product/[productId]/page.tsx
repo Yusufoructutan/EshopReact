@@ -26,7 +26,6 @@ const ProductPage = ({ params }: { params: { productId: string } }) => {
     const [product, setProduct] = useState<Product | null>(null);
     const productId = params.productId;
 
-    // Error handling from the store
     const { openErrorModal } = useErrorStore();
 
     useEffect(() => {
@@ -40,8 +39,7 @@ const ProductPage = ({ params }: { params: { productId: string } }) => {
                     const data: Product = await res.json();
                     setProduct(data);
                 } catch (error: any) {
-                    console.error('Error fetching product:', error);
-                    openErrorModal(error.message);
+                 
                 }
             }
         };
@@ -49,7 +47,6 @@ const ProductPage = ({ params }: { params: { productId: string } }) => {
         fetchProduct();
     }, [productId, openErrorModal]);
 
-    if (!product) return <div>Loading...</div>;
 
     return (
         <div className='p-8'>

@@ -1,13 +1,12 @@
 'use client'
 
-import { InputProps } from './InputProps';  // İlgili TypeScript dosyasını import et
+import { InputProps } from './InputProps';  
 import React from 'react';
 
 const Input: React.FC<InputProps> = ({
     id,
     label,
     type,
-    disabled,
     required,
     register,
     errors
@@ -17,7 +16,6 @@ const Input: React.FC<InputProps> = ({
             <input
                 autoComplete="off"
                 id={id}
-                disabled={disabled}
                 {...register(id, { required })}
                 placeholder=""
                 type={type}

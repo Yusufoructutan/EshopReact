@@ -2,15 +2,15 @@
 
 import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
+import { useErrorStore } from '@/app/Store/errorStore';
 
 interface SearchProps {
     onSearch: (term: string) => void;
 }
 
 const Search: React.FC<SearchProps> = ({ onSearch }) => {
-    
     const [searchTerm, setSearchTerm] = useState('');
-    
+    const { openErrorModal } = useErrorStore(); 
 
     const handleSearchClick = () => {
         onSearch(searchTerm); 

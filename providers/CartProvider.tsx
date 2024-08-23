@@ -1,4 +1,3 @@
-// components/CartProvider.tsx
 "use client";
 
 import { CartContextProvider } from "@/hooks/useCart";

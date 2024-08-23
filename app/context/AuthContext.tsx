@@ -19,13 +19,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const login = (token: string) => {
     localStorage.setItem('token', token);
     setIsLoggedIn(true);
-    router.push('/'); // Redirect after login
+    router.push('/'); 
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
-    router.push('/login'); // Redirect after logout
+    router.push('/login'); 
   };
 
   return (

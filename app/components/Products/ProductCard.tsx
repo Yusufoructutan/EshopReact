@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
-import { useErrorStore } from '@/app/Store/errorStore'; // Import Zustand store hook
+import { useErrorStore } from '@/app/Store/errorStore'; 
 
 // ProductCard için tür tanımı
 interface ProductCardProps {
@@ -18,27 +18,23 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
-  const defaultImage = '/path/to/placeholder-image.jpg'; // Yer tutucu görsel yolu
+  const defaultImage = '/path/to/placeholder-image.jpg'; 
   const [isFavorited, setIsFavorited] = useState(false);
   const [userId, setUserId] = useState<number | null>(null);
-  const { openErrorModal } = useErrorStore(); // Zustand store action
+  const { openErrorModal } = useErrorStore(); 
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-   
     if (token) {
-      // Kullanıcı ID'sini token'dan alın
       const getUserIdFromToken = (token: string) => {
         try {
           const payload = JSON.parse(atob(token.split('.')[1]));
-          return payload.nameid; // `sub` veya `userId` gibi alanları kontrol edin
+          return payload.nameid;
         } catch (error) {
-          console.error("Token ayrıştırılırken bir hata oluştu:", error);
-          openErrorModal("Token ayrıştırılırken bir hata oluştu. Lütfen tekrar deneyin."); // Use Zustand store to open error modal
-          return null;
+        
         }
       };
-
+  
       const userId = getUserIdFromToken(token);
       if (userId !== null) {
         setUserId(userId);
@@ -52,7 +48,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
 
   const toggleFavorite = () => {
     const token = localStorage.getItem('token');
-    
     if (token && userId !== null) {
       try {
         let favoritedItems = JSON.parse(localStorage.getItem(`favorites_${userId}`) || '[]');
@@ -62,17 +57,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
         } else {
           favoritedItems.push(data.productId);
           setShowFavoriteMessage(true);  // Mesajı göster
-          setTimeout(() => setShowFavoriteMessage(false), 3000);  // Mesajı 3 saniye sonra gizle
+          setTimeout(() => setShowFavoriteMessage(false), 3000);  
         }
   
         localStorage.setItem(`favorites_${userId}`, JSON.stringify(favoritedItems));
         setIsFavorited(!isFavorited);
       } catch (error) {
-        console.error("Favorilere ekleme sırasında bir hata oluştu:", error);
-        openErrorModal("Favorilere eklerken bir hata oluştu. Lütfen tekrar deneyin."); // Use Zustand store to open error modal
+    
       }
     }
   };
+  
   
   return (
     <Link href={`/product/${data.productId}`}>
@@ -92,7 +87,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ data }) => {
           <div className="absolute top-2 right-2 z-10">
             <button
               onClick={(e) => {
-                e.preventDefault(); // Kalbe tıklarken yönlendirmeyi engelleyin
+                e.preventDefault(); 
                 toggleFavorite();
               }}
             >

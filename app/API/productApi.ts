@@ -1,22 +1,23 @@
 import apiClient from './index';
 
-
-
-
 export const fetchProductsData = () => {
     return apiClient.get('/Product')
         .then(response => response.data)
-        .catch(error => {
-            throw new Error(`Error fetching products: ${error.message}`);
+        .catch(() => {
         });
+};
+
+export const fetchProductsDataV2 = () => {
+    return apiClient.get('/Producasdasdt')
+        .then(response => response.data)
+        .catch(() => '');
 };
 
 
 export const fetchProductsByCategory = (categoryId: number) => {
     return apiClient.get(`/Product/category/${categoryId}`)
         .then(response => response.data)
-        .catch(error => {
-            throw new Error(`Failed to fetch products by category: ${error.message}`);
+        .catch(() => {
         });
 };
 
@@ -25,7 +26,6 @@ export const fetchProductDetails = (productId: number, token: string) => {
     return apiClient.get(`/Product/${productId}`)
         .then(response => response.data)
         .catch(error => {
-            throw new Error(`Failed to fetch product details: ${error.message}`);
         });
 };
 

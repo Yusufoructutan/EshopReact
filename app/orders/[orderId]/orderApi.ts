@@ -11,7 +11,7 @@ export const fetchOrderById = async (orderId: number, token: string): Promise<Or
     });
 
     if (!response.ok) {
-        console.error('Hata kodu:', response.status); // Check error codes for troubleshooting
+        console.error('Hata kodu:', response.status); 
         throw new Error('Sipariş alınırken hata oluştu');
     }
 

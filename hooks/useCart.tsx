@@ -1,7 +1,7 @@
 import apiClient from "@/app/API";
 import { createContext, useCallback, useContext, useState } from "react";
 import toast from "react-hot-toast";
-import { useErrorStore } from '@/app/Store/errorStore'; // Import Zustand store hook
+import { useErrorStore } from '@/app/Store/errorStore'; 
 
 export interface CartProductType {
     cartItemId: number; 
@@ -30,7 +30,7 @@ interface Props {
 export const CartContextProvider: React.FC<Props> = ({ children }) => {
     const [cartTotalQty, setCartTotalQty] = useState(0);
     const [cartProducts, setCartProducts] = useState<CartProductType[]>([]);
-    const { openErrorModal } = useErrorStore(); // Use Zustand store action for error modal
+    const { openErrorModal } = useErrorStore(); 
 
     const handleAddProductToCart = useCallback(async (product: CartCreateType): Promise<void> => {
         if (product.productId <= 0) {
@@ -62,7 +62,6 @@ export const CartContextProvider: React.FC<Props> = ({ children }) => {
                 openErrorModal(`Ürün sepete eklenemedi: ${response.statusText}`);
             }
         } catch (error) {
-            openErrorModal(`Bir hata oluştu: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
         }
     }, []);
     
@@ -91,7 +90,6 @@ export const CartContextProvider: React.FC<Props> = ({ children }) => {
                 openErrorModal(`Ürün sepetten kaldırılamadı: ${response.statusText}`);
             }
         } catch (error) {
-            openErrorModal(`Bir hata oluştu: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
         }
     }, []);
 

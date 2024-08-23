@@ -5,9 +5,9 @@ import SetQuantity from "@/app/components/Products/SetQuantity";
 import { Rating } from "@mui/material";
 import { useCart } from '@/hooks/useCart';
 import { MdCheckCircle } from 'react-icons/md';
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from 'next/navigation';
 import Button from '@/app/components/Buttons/Button';
-import { useErrorStore } from '@/app/Store/errorStore'; // Import error store
+import { useErrorStore } from '@/app/Store/errorStore';
 import ErrorModal from '@/app/components/Modal/ErrorModal';
 
 interface ProductCategory {
@@ -27,7 +27,7 @@ interface Product {
 }
 
 interface ProductDetailsProps {
-    product: Product;
+    product: Product | null;  // Ürün null olabilir
 }
 
 const Horizontal = () => {
@@ -39,23 +39,26 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
     const [isProductInCart, setIsProductInCart] = useState(false);
     const [isAddingToCart, setIsAddingToCart] = useState(false);
     const router = useRouter();
-    
-    const { openErrorModal } = useErrorStore(); // Destructure openErrorModal from useErrorStore
+    const { openErrorModal } = useErrorStore();
 
     useEffect(() => {
-        if (cartProducts) {
-            const existingIndex = cartProducts.findIndex(item => item.productId === product.productId);
+        if (product && product.productId) {
+            const existingIndex = cartProducts.findIndex(
+                (item) => item.productId === product.productId
+            );
             setIsProductInCart(existingIndex > -1);
         }
-    }, [cartProducts, product.productId]);
+    }, [cartProducts, product]);
 
     const [quantity, setQuantity] = useState(1);
 
     const handleQtyIncrease = useCallback(() => {
-        if (quantity < product.stockQuantity) {
-            setQuantity(q => q + 1);
+        if (product && product.stockQuantity !== undefined) {
+            if (quantity < product.stockQuantity) {
+                setQuantity(q => q + 1);
+            }
         }
-    }, [quantity, product.stockQuantity]);
+    }, [quantity, product]);
 
     const handleQtyDecrease = useCallback(() => {
         if (quantity > 1) {
@@ -63,7 +66,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
         }
     }, [quantity]);
 
-    const categoryNames = product.productCategories.map(cat => cat.categoryName).join(', ');
+    const categoryNames = product?.productCategories.map(cat => cat.categoryName).join(', ') || '';
 
     const handleAddToCart = async () => {
         const token = localStorage.getItem('token');
@@ -71,22 +74,27 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
             router.push('/login');
             return;
         }
-    
-        setIsAddingToCart(true);
-    
-        try {
 
-            await handleAddProductToCart({
-                productId: product.productId,
-                quantity
-            });
-    
+        setIsAddingToCart(true);
+
+        try {
+            if (product) {  // Product var mı kontrolü ekledik
+                await handleAddProductToCart({
+                    productId: product.productId,
+                    quantity
+                });
+            }
         } catch (error: any) {
-            console.error('Error adding product to cart:', error);
-            openErrorModal(error.message); 
-        } 
+            openErrorModal('An error occurred while adding the product to the cart.');
+        } finally {
+            setIsAddingToCart(false);
+        }
     };
-    
+
+    if (!product) {
+        return <p>Product not found</p>;
+    }
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             <div>
@@ -109,7 +117,7 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                 </div>
 
                 <Horizontal />
-               
+
                 {isProductInCart ? (
                     <>
                         <p className='mb-2 text-slate-500 flex items-center gap-1'>
@@ -122,24 +130,24 @@ const ProductDetails = ({ product }: ProductDetailsProps) => {
                     </>
                 ) : (
                     <>
-                        <SetQuantity 
+                        <SetQuantity
                             quantity={quantity}
                             handleQtyIncrease={handleQtyIncrease}
                             handleQtyDecrease={handleQtyDecrease}
                         />
                         <Horizontal />
                         <div>
-                            <Button 
-                                label='Add To Cart' 
-                                onClick={handleAddToCart} 
-                                disabled={isAddingToCart} 
+                            <Button
+                                label='Add To Cart'
+                                onClick={handleAddToCart}
+                                disabled={isAddingToCart}
                             />
                         </div>
                     </>
                 )}
             </div>
 
-            <ErrorModal /> 
+            <ErrorModal />
         </div>
     );
 }

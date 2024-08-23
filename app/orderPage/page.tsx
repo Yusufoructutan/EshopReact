@@ -9,8 +9,7 @@ import { useErrorStore } from '@/app/Store/errorStore';
 
 const OrdersPage: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const { openErrorModal } = useErrorStore(); // Use error store for modal
+  const { openErrorModal } = useErrorStore(); 
   
   useEffect(() => {
     const loadOrders = async () => {
@@ -29,16 +28,13 @@ const OrdersPage: React.FC = () => {
         );
         setOrders(ordersWithProductNames);
       } catch (err: any) {
-        openErrorModal('Siparişler alınırken bir hata oluştu.'); // Open error modal
-      } finally {
-        setLoading(false);
+      
       }
     };
 
     loadOrders();
   }, [openErrorModal]);
 
-  if (loading) return <div className="flex justify-center items-center h-screen text-lg">Yükleniyor...</div>;
 
   return (
     <div className="container mx-auto p-6">
@@ -74,7 +70,7 @@ const OrdersPage: React.FC = () => {
           </div>
         )}
       </div>
-      <ErrorModal /> {/* Render ErrorModal */}
+      <ErrorModal /> 
     </div>
   );
 };

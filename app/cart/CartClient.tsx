@@ -7,14 +7,13 @@ import { useRouter } from 'next/navigation';
 import Button from "../components/Buttons/Button";
 import { deleteCartItem, fetchCartData, updateCartQuantity } from "../API/cartApi";
 import { fetchProductDetails } from "../API/productApi";
-import ErrorModal from '@/app/components/Modal/ErrorModal'; // ErrorModal import
-import { useErrorStore } from '@/app/Store/errorStore'; // useErrorStore import
+import ErrorModal from '@/app/components/Modal/ErrorModal'; 
+import { useErrorStore } from '@/app/Store/errorStore'; 
 
 const CartClient = () => {
     const [carts, setCarts] = useState<CartProductType[]>([]);
-    const [loading, setLoading] = useState(true);
     const router = useRouter();
-    const { openErrorModal } = useErrorStore(); // Use error store for modal
+    const { openErrorModal } = useErrorStore(); 
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -38,8 +37,7 @@ const CartClient = () => {
                             quantity: item.quantity
                         };
                     } catch (error: any) {
-                        console.error(`Ürün ${item.productId} detayları alınırken hata oluştu:`, error);
-                        return null;
+                      
                     }
                 });
 
@@ -49,11 +47,8 @@ const CartClient = () => {
                 );
                 setCarts(validData);
             } catch (error: any) {
-                console.error('Ürünleri çekerken hata oluştu:', error);
-                openErrorModal("Ürünler alınırken bir hata oluştu."); // Open error modal
-            } finally {
-                setLoading(false);
-            }
+                
+            } 
         };
 
         fetchProducts();
@@ -62,7 +57,7 @@ const CartClient = () => {
     const handleUpdateQuantity = async (cartItemId: number, newQuantity: number) => {
         const token = localStorage.getItem('token');
         if (!token) {
-            openErrorModal('Kullanıcı doğrulanmamış.'); // Open error modal
+            openErrorModal('Kullanıcı doğrulanmamış.'); 
             return;
         }
 
@@ -76,15 +71,14 @@ const CartClient = () => {
                 )
             );
         } catch (error: any) {
-            console.error('Miktar güncellenirken hata oluştu:', error);
-            openErrorModal('Miktar güncellenirken bir hata oluştu.'); // Open error modal
+          
         }
     };
 
     const handleDeleteItem = async (cartItemId: number) => {
         const token = localStorage.getItem('token');
         if (!token) {
-            openErrorModal('Kullanıcı doğrulanmamış.'); // Open error modal
+            openErrorModal('Kullanıcı doğrulanmamış.'); 
             return;
         }
 
@@ -92,8 +86,7 @@ const CartClient = () => {
             await deleteCartItem(cartItemId, token);
             setCarts(prevCarts => prevCarts.filter(cartItem => cartItem.cartItemId !== cartItemId));
         } catch (error: any) {
-            console.error('Ürün silinirken hata oluştu:', error);
-            openErrorModal('Ürün silinirken bir hata oluştu.'); // Open error modal
+           
         }
     };
 
@@ -114,7 +107,7 @@ const CartClient = () => {
     const handleCheckout = async () => {
         const token = localStorage.getItem('token');
         if (!token) {
-            openErrorModal('Kullanıcı doğrulanmamış.'); // Open error modal
+            openErrorModal('Kullanıcı doğrulanmamış.'); 
             return;
         }
     
@@ -138,21 +131,16 @@ const CartClient = () => {
                 throw new Error('Sipariş oluşturulurken hata oluştu.');
             }
     
-            // Sipariş ID'sini API yanıtından alın
             const result = await response.json();
-            const orderId = result.orderId; // API'den dönen sipariş ID'si
+            const orderId = result.orderId; 
     
-            // Sipariş başarılı bir şekilde oluşturuldu, siparişler sayfasına yönlendir
             router.push(`/orders/${orderId}`);
         } catch (error: any) {
-            console.error('Sipariş oluşturulurken hata oluştu:', error);
-            openErrorModal('Sipariş oluşturulurken bir hata oluştu.'); // Open error modal
+           
         }
     };
     
-    if (loading) {
-        return <div>Yükleniyor...</div>;
-    }
+   
 
     if (carts.length === 0) {
         return (
@@ -217,7 +205,7 @@ const CartClient = () => {
             <div className="text-right mt-4">
                 <Button label="Sepeti Onayla" onClick={handleCheckout} />
             </div>
-            <ErrorModal /> {/* Render ErrorModal */}
+            <ErrorModal /> 
         </div>
     );
 };

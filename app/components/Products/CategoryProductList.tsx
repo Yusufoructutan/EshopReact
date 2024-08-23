@@ -11,8 +11,7 @@ interface CategoryProductListProps {
 
 const CategoryProductList = ({ categoryId }: CategoryProductListProps) => {
     const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState(true);
-    const { openErrorModal } = useErrorStore(); // Zustand'dan fonksiyonu import ettik
+    const { openErrorModal } = useErrorStore(); 
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -20,16 +19,12 @@ const CategoryProductList = ({ categoryId }: CategoryProductListProps) => {
                 const data = await fetchProductsByCategory(categoryId);
                 setProducts(data);
             } catch (error: any) {
-                openErrorModal(error.message);
-            } finally {
-                setLoading(false);
             }
         };
 
         fetchProducts();
     }, [categoryId, openErrorModal]);
 
-    if (loading) return <div>Loading...</div>;
 
     return (
         <div className="grid grid-cols-3 gap-4">

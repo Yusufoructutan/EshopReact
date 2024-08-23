@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/app/context/AuthContext';
 import Link from 'next/link';
-import { FaUser, FaSignOutAlt, FaSignInAlt, FaUserPlus, FaHeart, FaList } from 'react-icons/fa'; // FaList ikonu eklendi
+import { FaUser, FaSignOutAlt, FaSignInAlt, FaUserPlus, FaHeart, FaList } from 'react-icons/fa'; 
 import { useState, useRef, useEffect } from 'react';
 import Modal from '../Modal/LogoutModal';
 import { useRouter } from 'next/navigation';
@@ -14,29 +14,26 @@ const UserMenu: React.FC = () => {
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  // Menü durumunu değiştirir
   const toggleMenu = () => {
     setIsMenuOpen(prev => !prev);
   };
 
-  // Çıkış yapma işlemi için onay modali açılır
   const handleLogout = () => {
     setIsModalOpen(true);
   };
 
-  // Çıkış işlemi onaylandığında
   const handleConfirmLogout = () => {
     logout();
     setIsModalOpen(false);
-    router.push('/login'); // Kullanıcıyı giriş sayfasına yönlendir
+    router.push('/login'); 
   };
 
-  // Modalı kapatma işlemi
+ 
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
-  // Menü dışına tıklanınca menüyü kapatır
+ 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -71,7 +68,7 @@ const UserMenu: React.FC = () => {
                   href="/orderPage"
                   className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 w-full text-left"
                 >
-                  <FaList /> {/* İkon eklendi */}
+                  <FaList /> 
                   <span>Siparişlerim</span>
                 </Link>
                 <Link
@@ -86,7 +83,7 @@ const UserMenu: React.FC = () => {
                   className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 w-full text-left"
                 >
                   <FaSignOutAlt />
-                  <span>Logout</span>
+                  <span>Çıkış Yap</span>
                 </button>
               </>
             ) : (
@@ -96,14 +93,14 @@ const UserMenu: React.FC = () => {
                   className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 w-full text-left"
                 >
                   <FaSignInAlt />
-                  <span>Login</span>
+                  <span>Giriş Yap</span>
                 </Link>
                 <Link
                   href="/register"
                   className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:bg-gray-100 w-full text-left"
                 >
                   <FaUserPlus />
-                  <span>Sign Up</span>
+                  <span>Kayıt ol</span>
                 </Link>
               </>
             )}

@@ -10,20 +10,23 @@ import Search from "./Search";
 import HamburgerMenu from "./HamburgerMenu";
 import axios from 'axios';
 import { useSearchContext } from '@/app/context/SearchContext';
+import { useErrorStore } from '@/app/Store/errorStore';
 
 const redressed = Redressed({ subsets: ['latin'], weight: ["400"] });
 
 const Navbar: React.FC = () => {
-    const { setSearchResults } = useSearchContext(); // Context'ten fonksiyonu al
+    const { setSearchResults } = useSearchContext(); 
+    const { openErrorModal } = useErrorStore(); 
 
     const handleSearch = async (searchTerm: string) => {
         try {
             const response = await axios.get('https://localhost:7125/api/Product/search', {
                 params: { query: searchTerm }
             });
-            setSearchResults(response.data); // Arama sonuçlarını context'e ata
+            setSearchResults(response.data); 
         } catch (error) {
-            console.error('Arama sırasında bir hata oluştu:', error);
+         
+
         }
     };
     

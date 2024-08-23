@@ -13,10 +13,8 @@ const HamburgerMenu = () => {
     };
 
     const handleClickOutside = (event: MouseEvent) => {
-        // Tür denetimi
         const target = event.target as HTMLElement;
 
-        // Menü dışında tıklanıp tıklanmadığını kontrol et
         if (!target.closest('.menu')) {
             setIsMenuOpen(false);
         }
@@ -51,8 +49,8 @@ const HamburgerMenu = () => {
                     <ul className="space-y-2">
                         <li><button onClick={() => handleCategoryClick(1)} className="hover:text-yellow-400 transition-colors">Elektronik</button></li>
                         <li><button onClick={() => handleCategoryClick(2)} className="hover:text-yellow-400 transition-colors">Giyim</button></li>
-                        <li><button onClick={() => handleCategoryClick(3)} className="hover:text-yellow-400 transition-colors">Mutfak Eşyaları</button></li>
-                        <li><button onClick={() => handleCategoryClick(4)} className="hover:text-yellow-400 transition-colors">Oyun</button></li>
+                        <li><button onClick={() => handleCategoryClick(9)} className="hover:text-yellow-400 transition-colors">Mutfak Eşyaları</button></li>
+                        <li><button onClick={() => handleCategoryClick(7)} className="hover:text-yellow-400 transition-colors">Oyun</button></li>
                         <li><button onClick={() => handleCategoryClick(5)} className="hover:text-yellow-400 transition-colors">Kozmetik</button></li>
 
                     </ul>

@@ -9,14 +9,12 @@ import { useErrorStore } from '@/app/Store/errorStore';
 
 const OrdersClient = () => {
     const [order, setOrder] = useState<Order | null>(null);
-    const [loading, setLoading] = useState(true);
     const { orderId } = useParams();
     const router = useRouter();
-    const { openErrorModal } = useErrorStore(); // Use error store for modal
+    const { openErrorModal } = useErrorStore(); 
 
     useEffect(() => {
         if (!orderId) {
-            setLoading(false);
             return;
         }
 
@@ -32,19 +30,14 @@ const OrdersClient = () => {
                 console.log('API Yanıtı:', orderData);
                 setOrder(orderData);
             } catch (error: any) {
-                console.error('Siparişi çekerken hata oluştu:', error);
-                openErrorModal('Sipariş alınırken bir hata oluştu.'); // Open error modal
-            } finally {
-                setLoading(false);
-            }
+               
+            } 
         };
 
         fetchOrderData();
     }, [orderId, router, openErrorModal]);
 
-    if (loading) {
-        return <div className="text-center text-lg">Yükleniyor...</div>;
-    }
+  
 
     if (!order) {
         return <div className="text-center text-xl text-gray-600">Sipariş bulunamadı.</div>;
@@ -81,7 +74,7 @@ const OrdersClient = () => {
                     <p className="text-gray-600">Ürün bulunamadı.</p>
                 )}
             </div>
-            <ErrorModal /> {/* Render ErrorModal */}
+            <ErrorModal /> 
         </div>
     );
 };
